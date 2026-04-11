@@ -13,6 +13,7 @@ import {
   VolumeX,
   Undo2,
   Redo2,
+  Type,
 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatDuration } from '../../utils/helpers';
@@ -23,6 +24,7 @@ const trackIcons = {
   audio: Headphones,
   narration: Mic,
   sfx: Sparkles,
+  captions: Type,
 };
 
 export default function Timeline() {

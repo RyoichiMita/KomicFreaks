@@ -261,6 +261,45 @@ export default function Preview() {
               onEnded={handleEnded}
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
+
+            {/* Caption Overlay */}
+            {(() => {
+              const captionsTrack = tracks.find((t) => t.id === 'captions');
+              if (!captionsTrack || captionsTrack.muted) return null;
+
+              const activeCaptions = captionsTrack.clips.filter((cap) => {
+                const start = cap.offset || 0;
+                const end = start + (cap.duration || 0);
+                return currentTime >= start && currentTime < end;
+              });
+
+              return activeCaptions.map((cap) => {
+                const posMap = { top: '8%', center: '50%', bottom: '85%' };
+                return (
+                  <div
+                    key={cap.id}
+                    className="caption-overlay"
+                    style={{
+                      top: posMap[cap.position] || '85%',
+                      textAlign: cap.alignment || 'center',
+                    }}
+                  >
+                    <span
+                      className="caption-overlay-text"
+                      style={{
+                        fontSize: cap.style?.fontSize || '24px',
+                        color: cap.style?.color || '#fff',
+                        background: cap.style?.bg || 'rgba(0,0,0,0.7)',
+                        fontWeight: cap.style?.fontWeight || '400',
+                        fontStyle: cap.style?.fontStyle || 'normal',
+                      }}
+                    >
+                      {cap.text}
+                    </span>
+                  </div>
+                );
+              });
+            })()}
           </div>
 
           {/* Progress scrubber */}

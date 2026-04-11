@@ -12,6 +12,7 @@ import {
   Keyboard,
   X,
   Save,
+  Type,
 } from 'lucide-react';
 import './App.css';
 
@@ -26,11 +27,13 @@ import ThumbnailPanel from './components/Thumbnail/ThumbnailPanel';
 import TemplatesPanel from './components/Templates/TemplatesPanel';
 import WelcomeScreen from './components/Welcome/WelcomeScreen';
 import ExportModal from './components/Export/ExportModal';
+import CaptionsPanel from './components/Captions/CaptionsPanel';
 
 // Tools available in the right tool strip inside the editor
 const TOOLS = [
   { id: 'narration', label: 'AI Narration', icon: Mic, badge: 'AI', title: '🗣️ AI Narration' },
   { id: 'sounds', label: 'Sounds', icon: Volume2, title: '🎭 Sound Effects' },
+  { id: 'captions', label: 'Captions', icon: Type, title: '📝 Captions & Text' },
   { id: 'thumbnail', label: 'Thumbnails', icon: Image, title: '🖼️ Thumbnails' },
   { id: 'templates', label: 'Templates', icon: Layout, title: '📐 Templates' },
 ];
@@ -98,6 +101,8 @@ function App() {
         return <NarrationPanel />;
       case 'sounds':
         return <SoundsPanel />;
+      case 'captions':
+        return <CaptionsPanel />;
       case 'thumbnail':
         return <ThumbnailPanel />;
       case 'templates':

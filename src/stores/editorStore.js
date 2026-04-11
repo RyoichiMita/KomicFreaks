@@ -52,6 +52,7 @@ const useEditorStore = create((set, get) => ({
     { id: 'audio', label: 'Audio', type: 'audio', clips: [], muted: false, volume: 1 },
     { id: 'narration', label: 'AI Narration', type: 'narration', clips: [], muted: false, volume: 1 },
     { id: 'sfx', label: 'Sound FX', type: 'sfx', clips: [], muted: false, volume: 0.8 },
+    { id: 'captions', label: 'Captions', type: 'captions', clips: [], muted: false, volume: 1 },
   ],
 
   addClipToTrack: (trackId, clip) => {
