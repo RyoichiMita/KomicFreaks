@@ -63,7 +63,7 @@ export default function AnimeClipsPanel() {
   const [isFetchingUrl, setIsFetchingUrl] = useState(false);
   const [proxyAvailable, setProxyAvailable] = useState(null);
   const [demucsAvailable, setDemucsAvailable] = useState(false);
-  const [isolateVocals, setIsolateVocals] = useState(false);
+  const [isolateOnExtract, setIsolateOnExtract] = useState(false);
 
   // --- Tagging state ---
   const [clipName, setClipName] = useState('');
@@ -105,7 +105,7 @@ export default function AnimeClipsPanel() {
     setUrlStatus('');
 
     try {
-      const { blob, type } = await fetchAudioFromUrl(urlInput.trim(), setUrlStatus, isolateVocals);
+      const { blob, type } = await fetchAudioFromUrl(urlInput.trim(), setUrlStatus);
 
       // Load the fetched audio into the extractor
       if (episodeUrl) URL.revokeObjectURL(episodeUrl);
@@ -271,7 +271,31 @@ export default function AnimeClipsPanel() {
       }
 
       // Encode to WAV
-      const wavBlob = audioBufferToWav(extractedBuffer);
+      let wavBlob = audioBufferToWav(extractedBuffer);
+
+      // Isolate vocals if requested (only processes the short clip!)
+      if (isolateOnExtract && demucsAvailable) {
+        showNotification('🎤 Isolating vocals...', 'info');
+        try {
+          const proxyUrl = import.meta.env.VITE_AUDIO_PROXY_URL || 'http://localhost:8787';
+          const isolateResponse = await fetch(`${proxyUrl}/isolate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'audio/wav' },
+            body: wavBlob,
+          });
+          if (isolateResponse.ok) {
+            wavBlob = await isolateResponse.blob();
+            showNotification('🎤 Vocals isolated!', 'success');
+          } else {
+            const err = await isolateResponse.json().catch(() => ({}));
+            showNotification(`Vocal isolation failed: ${err.error || 'Unknown'}`, 'error');
+          }
+        } catch (err) {
+          console.error('Vocal isolation error:', err);
+          showNotification('Vocal isolation failed, using original audio', 'error');
+        }
+      }
+
       const clipUrl = URL.createObjectURL(wavBlob);
 
       const clipId = `anime_${Date.now()}`;
@@ -598,6 +622,39 @@ export default function AnimeClipsPanel() {
                 />
               </div>
 
+              {/* Vocal Isolation Toggle */}
+              {demucsAvailable && (
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginTop: 'var(--space-sm)',
+                    padding: '8px 10px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: isolateOnExtract ? 'rgba(139, 92, 246, 0.12)' : 'var(--bg-deep)',
+                    border: `1px solid ${isolateOnExtract ? 'rgba(139, 92, 246, 0.3)' : 'var(--border-default)'}`,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isolateOnExtract}
+                    onChange={(e) => setIsolateOnExtract(e.target.checked)}
+                    style={{ accentColor: 'var(--accent-primary)' }}
+                  />
+                  <div>
+                    <div style={{ fontSize: '0.688rem', fontWeight: 600, color: isolateOnExtract ? 'var(--accent-primary-light)' : 'var(--text-primary)' }}>
+                      🎤 Isolate Vocals
+                    </div>
+                    <div style={{ fontSize: '0.563rem', color: 'var(--text-muted)' }}>
+                      Removes background music & SFX (~5s per clip)
+                    </div>
+                  </div>
+                </label>
+              )}
+
               {/* Extract Button */}
               <button
                 className="btn btn-primary"
@@ -608,12 +665,12 @@ export default function AnimeClipsPanel() {
                 {isExtracting ? (
                   <>
                     <div className="spinner" />
-                    Extracting...
+                    {isolateOnExtract ? 'Isolating vocals...' : 'Extracting...'}
                   </>
                 ) : (
                   <>
                     <Scissors size={14} />
-                    Extract Clip ({selectionDuration > 0 ? formatTime(selectionDuration) : 'Set points'})
+                    {isolateOnExtract ? '🎤 Extract Vocals Only' : `Extract Clip (${selectionDuration > 0 ? formatTime(selectionDuration) : 'Set points'})`}
                   </>
                 )}
               </button>
@@ -689,39 +746,6 @@ export default function AnimeClipsPanel() {
               </div>
             )}
 
-            {/* Vocal Isolation Toggle */}
-            {demucsAvailable && (
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginTop: 'var(--space-sm)',
-                  padding: '8px 10px',
-                  borderRadius: 'var(--radius-sm)',
-                  background: isolateVocals ? 'rgba(139, 92, 246, 0.12)' : 'var(--bg-deep)',
-                  border: `1px solid ${isolateVocals ? 'rgba(139, 92, 246, 0.3)' : 'var(--border-default)'}`,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={isolateVocals}
-                  onChange={(e) => setIsolateVocals(e.target.checked)}
-                  style={{ accentColor: 'var(--accent-primary)' }}
-                />
-                <div>
-                  <div style={{ fontSize: '0.688rem', fontWeight: 600, color: isolateVocals ? 'var(--accent-primary-light)' : 'var(--text-primary)' }}>
-                    🎤 Isolate Vocals
-                  </div>
-                  <div style={{ fontSize: '0.563rem', color: 'var(--text-muted)' }}>
-                    Removes background music & SFX (takes ~60s)
-                  </div>
-                </div>
-              </label>
-            )}
-
             {/* Fetch Button */}
             <button
               className="btn btn-primary"
@@ -732,12 +756,12 @@ export default function AnimeClipsPanel() {
               {isFetchingUrl ? (
                 <>
                   <div className="spinner" />
-                  {isolateVocals ? 'Extracting vocals...' : 'Fetching...'}
+                  Fetching...
                 </>
               ) : (
                 <>
                   <Link size={14} />
-                  {isolateVocals ? 'Fetch & Isolate Vocals' : 'Fetch Audio'}
+                  Fetch Audio
                 </>
               )}
             </button>
