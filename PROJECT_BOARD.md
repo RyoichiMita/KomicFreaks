@@ -24,7 +24,7 @@
 - [x] Project persistence (localStorage auto-save/load + Resume Project)
 - [x] Anime SFX library (24 synthesized sounds, preview + add to timeline)
 - [x] ElevenLabs narration panel (script editor, voice selection)
-- [x] Thumbnail generator panel
+- [x] Thumbnail generator panel (6 presets, frame capture, quick titles, stickers)
 - [x] Templates system (Figure Review, Unboxing, News, Comparison)
 - [x] Notification toast system
 - [x] Undo/Redo system (50-level history stack + ⌘Z/⌘⇧Z)
@@ -35,31 +35,31 @@
 - [x] Export track summary badges + muted track warnings
 - [x] Captions & text overlay system (6 presets, position/alignment controls, live preview)
 - [x] Transition system (7 types: Fade, Crossfade, Wipe, Zoom, Slide Up)
+- [x] Auto-Captions (Web Speech API speech-to-text, batch add to timeline)
+- [x] Agent infrastructure (7 agents, 6 workflows from Global Locksmith)
 
 ---
 
 ## 🔄 In Progress
 
+- [ ] Caption burn-in during FFmpeg export (drawtext filter)
 - [ ] Transition preview CSS animations in video player
-- [ ] Caption burn-in during FFmpeg export
 
 ---
 
 ## 📝 To Do
 
-### Phase 6: Advanced AI Features
-- [ ] Auto captions (speech-to-text using Web Speech API)
-- [ ] AI-generated thumbnails (canvas-based with text overlays)
-- [ ] Audio ducking (auto-lower music during narration)
-- [ ] Batch Auto-Cut (process multiple clips)
-
-### Phase 7: Polish & Ship
+### Phase 7: Advanced Polish
 - [ ] IndexedDB persistence (store file blobs for full project resume)
+- [ ] Audio ducking (auto-lower music during narration)
+- [ ] Custom SFX upload
+- [ ] AI-generated thumbnails (canvas-based with text overlays)
+
+### Phase 8: Ship
 - [ ] Performance optimization (Web Worker for FFmpeg)
 - [ ] GitHub remote setup & CI/CD
 - [ ] Deploy to Vercel/Netlify
 - [ ] Tutorial walkthrough for nephew
-- [ ] Custom SFX upload
 
 ---
 
