@@ -1,53 +1,12 @@
 import useEditorStore from '../../stores/editorStore';
 import {
   Upload,
-  Mic,
-  Volume2,
-  Image,
-  Layout,
   Sparkles,
+  Film,
 } from 'lucide-react';
 
 export default function WelcomeScreen() {
   const { setActiveTab } = useEditorStore();
-
-  const cards = [
-    {
-      icon: <Upload size={24} />,
-      title: 'Import & Edit',
-      desc: 'Drag in your clips and start editing',
-      tab: 'editor',
-      gradient: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
-    },
-    {
-      icon: <Mic size={24} />,
-      title: 'AI Narration',
-      desc: 'Generate voiceovers with AI',
-      tab: 'narration',
-      gradient: 'linear-gradient(135deg, #ec4899, #f472b6)',
-    },
-    {
-      icon: <Volume2 size={24} />,
-      title: 'Sound Effects',
-      desc: 'Anime reactions & SFX',
-      tab: 'sounds',
-      gradient: 'linear-gradient(135deg, #06b6d4, #22d3ee)',
-    },
-    {
-      icon: <Image size={24} />,
-      title: 'Thumbnails',
-      desc: 'Create YouTube thumbnails',
-      tab: 'thumbnail',
-      gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
-    },
-    {
-      icon: <Layout size={24} />,
-      title: 'Templates',
-      desc: 'One-click video structures',
-      tab: 'templates',
-      gradient: 'linear-gradient(135deg, #10b981, #34d399)',
-    },
-  ];
 
   return (
     <div className="welcome-screen">
@@ -67,23 +26,45 @@ export default function WelcomeScreen() {
         </p>
       </div>
 
-      <div className="welcome-actions">
-        {cards.map((card) => (
+      <div className="welcome-actions" style={{ justifyContent: 'center' }}>
+        <div
+          className="welcome-card welcome-card-hero"
+          onClick={() => setActiveTab('editor')}
+        >
           <div
-            key={card.tab}
-            className="welcome-card"
-            onClick={() => setActiveTab(card.tab)}
+            className="welcome-card-icon"
+            style={{ background: 'linear-gradient(135deg, #7c3aed, #a78bfa)', color: 'white', width: '56px', height: '56px' }}
           >
-            <div
-              className="welcome-card-icon"
-              style={{ background: card.gradient, color: 'white' }}
-            >
-              {card.icon}
-            </div>
-            <div className="welcome-card-title">{card.title}</div>
-            <div className="welcome-card-desc">{card.desc}</div>
+            <Film size={28} />
           </div>
-        ))}
+          <div className="welcome-card-title" style={{ fontSize: '1rem' }}>Open Editor</div>
+          <div className="welcome-card-desc">
+            Import your clips, add AI narration, sound effects, and export — all in one place
+          </div>
+        </div>
+      </div>
+
+      <div className="welcome-features">
+        <div className="welcome-feature">
+          <span className="welcome-feature-icon">✂️</span>
+          <span>AI Auto-Cut</span>
+        </div>
+        <div className="welcome-feature">
+          <span className="welcome-feature-icon">🗣️</span>
+          <span>AI Narration</span>
+        </div>
+        <div className="welcome-feature">
+          <span className="welcome-feature-icon">🎭</span>
+          <span>Sound Effects</span>
+        </div>
+        <div className="welcome-feature">
+          <span className="welcome-feature-icon">🖼️</span>
+          <span>Thumbnails</span>
+        </div>
+        <div className="welcome-feature">
+          <span className="welcome-feature-icon">📐</span>
+          <span>Templates</span>
+        </div>
       </div>
 
       <div style={{

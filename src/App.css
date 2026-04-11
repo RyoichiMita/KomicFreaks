@@ -76,6 +76,24 @@
   gap: 2px;
 }
 
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-mode {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
 .nav-tab {
   padding: var(--space-sm) var(--space-lg);
   background: transparent;
@@ -112,6 +130,56 @@
   height: 2px;
   background: var(--gradient-primary);
   border-radius: var(--radius-full);
+}
+
+/* --- Tool Strip (vertical icon bar) --- */
+.tool-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-xs);
+  background: var(--bg-deep);
+  border-left: 1px solid var(--border-subtle);
+  align-items: center;
+}
+
+.tool-strip-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.tool-strip-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tool-strip-btn.active {
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--accent-primary-light);
+  box-shadow: inset 2px 0 0 var(--accent-primary);
+}
+
+.tool-strip-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  padding: 0 3px;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-primary);
+  color: white;
+  line-height: 1.3;
 }
 
 .header-right {
@@ -1103,6 +1171,47 @@
   color: var(--text-tertiary);
   line-height: 1.4;
 }
+
+.welcome-card-hero {
+  min-width: 280px;
+  max-width: 340px;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.welcome-card-hero .welcome-card-icon {
+  margin: 0 auto var(--space-md);
+}
+
+.welcome-card-hero:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+}
+
+.welcome-features {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.welcome-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.welcome-feature-icon {
+  font-size: 0.875rem;
+}
+
 
 /* --- Status Bar --- */
 .status-bar {

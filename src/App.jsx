@@ -26,12 +26,12 @@ import TemplatesPanel from './components/Templates/TemplatesPanel';
 import WelcomeScreen from './components/Welcome/WelcomeScreen';
 import ExportModal from './components/Export/ExportModal';
 
-const NAV_TABS = [
-  { id: 'editor', label: 'Editor', icon: Film },
-  { id: 'narration', label: 'AI Narration', icon: Mic, badge: 'AI' },
-  { id: 'sounds', label: 'Sounds', icon: Volume2 },
-  { id: 'thumbnail', label: 'Thumbnails', icon: Image },
-  { id: 'templates', label: 'Templates', icon: Layout },
+// Tools available in the right tool strip inside the editor
+const TOOLS = [
+  { id: 'narration', label: 'AI Narration', icon: Mic, badge: 'AI', title: '🗣️ AI Narration' },
+  { id: 'sounds', label: 'Sounds', icon: Volume2, title: '🎭 Sound Effects' },
+  { id: 'thumbnail', label: 'Thumbnails', icon: Image, title: '🖼️ Thumbnails' },
+  { id: 'templates', label: 'Templates', icon: Layout, title: '📐 Templates' },
 ];
 
 function App() {
@@ -48,6 +48,7 @@ function App() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [activeTool, setActiveTool] = useState(null);
 
   // Register keyboard shortcuts
   useKeyboardShortcuts();
@@ -55,8 +56,12 @@ function App() {
   const hasClips = tracks.some((t) => t.clips.length > 0);
   const clipCount = tracks.reduce((sum, t) => sum + t.clips.length, 0);
 
-  const renderRightPanel = () => {
-    switch (activeTab) {
+  const toggleTool = (toolId) => {
+    setActiveTool(activeTool === toolId ? null : toolId);
+  };
+
+  const renderToolPanel = () => {
+    switch (activeTool) {
       case 'narration':
         return <NarrationPanel />;
       case 'sounds':
@@ -70,7 +75,8 @@ function App() {
     }
   };
 
-  const rightPanel = renderRightPanel();
+  const toolPanel = renderToolPanel();
+  const activeToolData = TOOLS.find((t) => t.id === activeTool);
 
   // --- Welcome screen ---
   if (activeTab === 'welcome') {
@@ -110,10 +116,10 @@ function App() {
     );
   }
 
-  // --- Editor ---
+  // --- Editor (unified — everything lives here) ---
   return (
     <div className="app">
-      {/* Header */}
+      {/* Header — clean, no tabs */}
       <header className="header">
         <div className="header-left">
           <div
@@ -150,23 +156,13 @@ function App() {
           </div>
         </div>
 
-        {/* Nav Tabs */}
-        <nav className="header-nav">
-          {NAV_TABS.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <Icon size={14} />
-                {tab.label}
-                {tab.badge && <span className="badge badge-ai">{tab.badge}</span>}
-              </button>
-            );
-          })}
-        </nav>
+        {/* Center — just a label showing the mode */}
+        <div className="header-center">
+          <div className="header-mode">
+            <Film size={14} />
+            <span>Editor</span>
+          </div>
+        </div>
 
         <div className="header-right">
           <button
@@ -210,21 +206,47 @@ function App() {
           <div className="workspace-top">
             <Preview />
 
-            {rightPanel && (
+            {/* Tool Panel — slides open when a tool is active */}
+            {toolPanel && (
               <div className="properties-panel" style={{ overflowY: 'auto' }}>
                 <div className="properties-header">
                   <div className="properties-title">
-                    {activeTab === 'narration' && '🗣️ AI Narration'}
-                    {activeTab === 'sounds' && '🎭 Sound Effects'}
-                    {activeTab === 'thumbnail' && '🖼️ Thumbnails'}
-                    {activeTab === 'templates' && '📐 Templates'}
+                    {activeToolData?.title}
                   </div>
+                  <button
+                    className="btn-icon"
+                    style={{ width: '24px', height: '24px' }}
+                    onClick={() => setActiveTool(null)}
+                  >
+                    <X size={14} />
+                  </button>
                 </div>
                 <div className="properties-content">
-                  {rightPanel}
+                  {toolPanel}
                 </div>
               </div>
             )}
+
+            {/* Tool Strip — vertical icon bar on the right edge */}
+            <div className="tool-strip">
+              {TOOLS.map((tool) => {
+                const Icon = tool.icon;
+                const isActive = activeTool === tool.id;
+                return (
+                  <button
+                    key={tool.id}
+                    className={`tool-strip-btn ${isActive ? 'active' : ''}`}
+                    onClick={() => toggleTool(tool.id)}
+                    title={tool.label}
+                  >
+                    <Icon size={16} />
+                    {tool.badge && (
+                      <span className="tool-strip-badge">{tool.badge}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <Timeline />
@@ -281,11 +303,10 @@ function App() {
                   <div className="property-group-title">Editing</div>
                   <ShortcutRow keys={['Del']} desc="Delete selected clip" />
                   <ShortcutRow keys={['Esc']} desc="Deselect clip" />
-                  <ShortcutRow keys={['⌘', '1']} desc="Editor tab" />
-                  <ShortcutRow keys={['⌘', '2']} desc="AI Narration tab" />
-                  <ShortcutRow keys={['⌘', '3']} desc="Sounds tab" />
-                  <ShortcutRow keys={['⌘', '4']} desc="Thumbnails tab" />
-                  <ShortcutRow keys={['⌘', '5']} desc="Templates tab" />
+                  <ShortcutRow keys={['⌘', '1']} desc="AI Narration" />
+                  <ShortcutRow keys={['⌘', '2']} desc="Sounds" />
+                  <ShortcutRow keys={['⌘', '3']} desc="Thumbnails" />
+                  <ShortcutRow keys={['⌘', '4']} desc="Templates" />
                 </div>
               </div>
             </div>
