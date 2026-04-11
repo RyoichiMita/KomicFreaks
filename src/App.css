@@ -1075,6 +1075,90 @@
   white-space: nowrap;
 }
 
+/* --- Music Track Cards --- */
+.music-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.music-track-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-deep);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.music-track-card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.music-track-card.playing {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+}
+
+.music-preview-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 40px;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border-subtle);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.music-preview-btn:hover {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent-primary-light);
+}
+
+.music-info {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+}
+
+.music-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-desc {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.music-mood {
+  font-size: 0.563rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-primary-light);
+  background: rgba(139, 92, 246, 0.15);
+  padding: 2px 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
 /* --- Template Cards --- */
 .template-grid {
   display: grid;

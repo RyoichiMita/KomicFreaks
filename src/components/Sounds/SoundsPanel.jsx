@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Volume2, Play, Plus, Search } from 'lucide-react';
+import { Volume2, Play, Plus, Search, Square, Music } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { playSFX, getSFXDuration, getSFXBlobUrl } from '../../services/soundEffects';
+import { MUSIC_TRACKS, previewMusic, stopPreview, getMusicDuration, getMusicBlobUrl } from '../../services/musicLibrary';
 
 const SOUND_CATEGORIES = [
   {
@@ -54,6 +55,7 @@ export default function SoundsPanel() {
   const { addClipToTrack, showNotification } = useEditorStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [playingId, setPlayingId] = useState(null);
+  const [previewingMusicId, setPreviewingMusicId] = useState(null);
 
   const handlePreview = (sound) => {
     setPlayingId(sound.file);
@@ -160,7 +162,8 @@ export default function SoundsPanel() {
           </div>
         ))}
 
-        {filteredCategories.length === 0 && (
+        {filteredCategories.length === 0 && !searchTerm && null}
+        {filteredCategories.length === 0 && searchTerm && (
           <div style={{
             textAlign: 'center',
             padding: 'var(--space-xl)',
@@ -171,6 +174,78 @@ export default function SoundsPanel() {
           </div>
         )}
       </div>
+
+      {/* Background Music Section */}
+      {!searchTerm && (
+        <div className="ai-card" style={{ marginTop: 'var(--space-md)' }}>
+          <div className="ai-card-header">
+            <div className="ai-card-icon" style={{ background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)' }}>
+              <Music size={20} color="white" />
+            </div>
+            <div>
+              <div className="ai-card-title">Background Music</div>
+              <div className="ai-card-description">
+                Ambient loops for your videos
+              </div>
+            </div>
+          </div>
+
+          <div className="music-track-list">
+            {MUSIC_TRACKS.map((track) => {
+              const isPreviewing = previewingMusicId === track.id;
+              return (
+                <div key={track.id} className={`music-track-card ${isPreviewing ? 'playing' : ''}`}>
+                  <button
+                    className="music-preview-btn"
+                    onClick={() => {
+                      if (isPreviewing) {
+                        stopPreview();
+                        setPreviewingMusicId(null);
+                      } else {
+                        if (previewingMusicId) stopPreview();
+                        previewMusic(track.id);
+                        setPreviewingMusicId(track.id);
+                      }
+                    }}
+                    title={isPreviewing ? 'Stop preview' : `Preview "${track.name}"`}
+                  >
+                    {isPreviewing ? <Square size={12} /> : <Play size={12} />}
+                  </button>
+                  <div className="music-info">
+                    <div className="music-name">
+                      <span>{track.emoji}</span> {track.name}
+                    </div>
+                    <div className="music-desc">{track.description}</div>
+                  </div>
+                  <span className="music-mood">{track.mood}</span>
+                  <button
+                    className="sound-add-btn"
+                    onClick={() => {
+                      const duration = getMusicDuration(track.id);
+                      const blobUrl = getMusicBlobUrl(track.id);
+                      addClipToTrack('audio', {
+                        name: `${track.emoji} ${track.name}`,
+                        url: blobUrl,
+                        startTime: 0,
+                        duration,
+                        offset: 0,
+                        type: 'audio',
+                        musicId: track.id,
+                        loop: true,
+                      });
+                      showNotification(`Added "${track.name}" to Audio track`, 'success');
+                    }}
+                    title={`Add "${track.name}" to Audio track`}
+                    style={{ borderLeft: '1px solid var(--border-subtle)', height: '100%', width: '32px' }}
+                  >
+                    <Plus size={12} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

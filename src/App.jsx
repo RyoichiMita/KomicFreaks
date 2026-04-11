@@ -47,6 +47,8 @@ function App() {
     lastSavedAt,
     saveProject,
     initAutoSave,
+    undo,
+    redo,
   } = useEditorStore();
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -63,17 +65,25 @@ function App() {
     return cleanup;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Manual save with Cmd+S
+  // Manual save (⌘S) + Undo (⌘Z) + Redo (⌘⇧Z)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault();
         saveProject();
       }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [saveProject]);
+  }, [saveProject, undo, redo]);
 
   const hasClips = tracks.some((t) => t.clips.length > 0);
   const clipCount = tracks.reduce((sum, t) => sum + t.clips.length, 0);
@@ -336,6 +346,9 @@ function App() {
                 </div>
                 <div className="shortcut-group">
                   <div className="property-group-title">Editing</div>
+                  <ShortcutRow keys={['⌘', 'Z']} desc="Undo" />
+                  <ShortcutRow keys={['⌘', '⇧', 'Z']} desc="Redo" />
+                  <ShortcutRow keys={['⌘', 'S']} desc="Save project" />
                   <ShortcutRow keys={['Del']} desc="Delete selected clip" />
                   <ShortcutRow keys={['Esc']} desc="Deselect clip" />
                   <ShortcutRow keys={['⌘', '1']} desc="AI Narration" />

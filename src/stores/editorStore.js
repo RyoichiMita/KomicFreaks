@@ -1,9 +1,13 @@
 import { create } from 'zustand';
 import { saveProject as persistSave, loadProject, startAutoSave } from '../services/projectPersistence';
+import { createHistoryManager } from '../services/history';
 
 // Generate unique IDs
 let idCounter = 0;
 const generateId = () => `clip_${Date.now()}_${++idCounter}`;
+
+// History manager instance (lives outside the store)
+const history = createHistoryManager();
 
 const useEditorStore = create((set, get) => ({
   // --- View State ---
@@ -52,6 +56,7 @@ const useEditorStore = create((set, get) => ({
 
   addClipToTrack: (trackId, clip) => {
     const state = get();
+    history.push(state.tracks);
     const track = state.tracks.find((t) => t.id === trackId);
 
     // Auto-calculate offset: place after last clip on this track
@@ -77,6 +82,7 @@ const useEditorStore = create((set, get) => ({
   },
 
   removeClipFromTrack: (trackId, clipId) => {
+    history.push(get().tracks);
     set((state) => ({
       tracks: state.tracks.map((track) =>
         track.id === trackId
@@ -103,6 +109,7 @@ const useEditorStore = create((set, get) => ({
 
   moveClip: (fromTrackId, toTrackId, clipId, newOffset) => {
     const state = get();
+    history.push(state.tracks);
     const fromTrack = state.tracks.find((t) => t.id === fromTrackId);
     const clip = fromTrack?.clips.find((c) => c.id === clipId);
 
@@ -149,6 +156,7 @@ const useEditorStore = create((set, get) => ({
   },
 
   clearAllTracks: () => {
+    history.push(get().tracks);
     set((state) => ({
       tracks: state.tracks.map((track) => ({ ...track, clips: [] })),
       selectedClipId: null,
@@ -156,6 +164,7 @@ const useEditorStore = create((set, get) => ({
   },
 
   replaceTrackClips: (trackId, newClips) => {
+    history.push(get().tracks);
     set((state) => ({
       tracks: state.tracks.map((track) =>
         track.id === trackId
@@ -235,6 +244,26 @@ const useEditorStore = create((set, get) => ({
   ffmpegLoading: false,
   setFFmpegLoaded: (val) => set({ ffmpegLoaded: val }),
   setFFmpegLoading: (val) => set({ ffmpegLoading: val }),
+
+  // --- Undo/Redo ---
+  undo: () => {
+    const prev = history.undo(get().tracks);
+    if (prev) {
+      set({ tracks: prev });
+      get().showNotification('Undo', 'info');
+    }
+  },
+
+  redo: () => {
+    const next = history.redo(get().tracks);
+    if (next) {
+      set({ tracks: next });
+      get().showNotification('Redo', 'info');
+    }
+  },
+
+  canUndo: () => history.canUndo(),
+  canRedo: () => history.canRedo(),
 
   // --- Active Template ---
   activeTemplate: null,

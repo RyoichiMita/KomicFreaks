@@ -11,6 +11,8 @@ import {
   Volume2,
   Volume1,
   VolumeX,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatDuration } from '../../utils/helpers';
@@ -39,6 +41,10 @@ export default function Timeline() {
     setTrackVolume,
     setCurrentTime,
     getTotalDuration,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useEditorStore();
 
   const [dragState, setDragState] = useState(null);
@@ -181,6 +187,22 @@ export default function Timeline() {
                   <span className="badge badge-ai" style={{ fontSize: '0.563rem', padding: '1px 4px' }}>AI</span>
                 </button>
               )}
+              <button
+                className="btn-icon tooltip"
+                data-tooltip="Undo (⌘Z)"
+                onClick={undo}
+                disabled={!canUndo()}
+              >
+                <Undo2 size={14} />
+              </button>
+              <button
+                className="btn-icon tooltip"
+                data-tooltip="Redo (⌘⇧Z)"
+                onClick={redo}
+                disabled={!canRedo()}
+              >
+                <Redo2 size={14} />
+              </button>
               <button
                 className="btn-icon tooltip"
                 data-tooltip="Delete selected (Del)"
