@@ -1,5 +1,7 @@
-import { Volume2 } from 'lucide-react';
+import { useState } from 'react';
+import { Volume2, Play, Plus, Search } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
+import { playSFX, getSFXDuration, getSFXBlobUrl } from '../../services/soundEffects';
 
 const SOUND_CATEGORIES = [
   {
@@ -49,23 +51,44 @@ const SOUND_CATEGORIES = [
 ];
 
 export default function SoundsPanel() {
-  const { addClipToTrack } = useEditorStore();
+  const { addClipToTrack, showNotification } = useEditorStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [playingId, setPlayingId] = useState(null);
 
-  const handlePlaySound = (sound) => {
-    // For now, add a placeholder clip to the SFX track
-    // In production, these would be actual audio files from public/sounds/
-    addClipToTrack('sfx', {
-      name: `${sound.emoji} ${sound.label}`,
-      url: null, // Will be replaced with actual sound files
-      startTime: 0,
-      duration: 1.5,
-      offset: 0,
-      type: 'sfx',
-    });
+  const handlePreview = (sound) => {
+    setPlayingId(sound.file);
+    playSFX(sound.file);
+    setTimeout(() => setPlayingId(null), 800);
   };
 
+  const handleAddToTimeline = (sound) => {
+    const duration = getSFXDuration(sound.file);
+    const blobUrl = getSFXBlobUrl(sound.file);
+
+    addClipToTrack('sfx', {
+      name: `${sound.emoji} ${sound.label}`,
+      url: blobUrl,
+      startTime: 0,
+      duration: duration,
+      offset: 0,
+      type: 'sfx',
+      sfxId: sound.file,
+    });
+    showNotification(`Added "${sound.label}" to timeline`, 'success');
+  };
+
+  // Filter sounds by search
+  const filteredCategories = SOUND_CATEGORIES.map((cat) => ({
+    ...cat,
+    sounds: cat.sounds.filter(
+      (s) =>
+        s.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.file.toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+  })).filter((cat) => cat.sounds.length > 0);
+
   return (
-    <div className="ai-panel">
+    <div className="ai-panel sounds-panel">
       <div className="ai-card">
         <div className="ai-card-header">
           <div className="ai-card-icon sounds">
@@ -74,29 +97,79 @@ export default function SoundsPanel() {
           <div>
             <div className="ai-card-title">Anime Sound Library</div>
             <div className="ai-card-description">
-              One-click sound effects for your videos
+              Click to preview, + to add to timeline
             </div>
           </div>
         </div>
 
-        {SOUND_CATEGORIES.map((category) => (
+        {/* Search */}
+        <div style={{
+          position: 'relative',
+          marginBottom: 'var(--space-md)',
+        }}>
+          <Search
+            size={14}
+            style={{
+              position: 'absolute',
+              left: '10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'var(--text-muted)',
+            }}
+          />
+          <input
+            type="text"
+            className="input"
+            placeholder="Search sounds..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ paddingLeft: '32px', fontSize: '0.75rem' }}
+          />
+        </div>
+
+        {filteredCategories.map((category) => (
           <div key={category.title} className="property-group">
             <div className="property-group-title">{category.title}</div>
             <div className="sound-grid">
-              {category.sounds.map((sound) => (
-                <button
-                  key={sound.file}
-                  className="sound-btn"
-                  onClick={() => handlePlaySound(sound)}
-                  title={`Add "${sound.label}" to timeline`}
-                >
-                  <span className="sound-emoji">{sound.emoji}</span>
-                  <span className="sound-label">{sound.label}</span>
-                </button>
-              ))}
+              {category.sounds.map((sound) => {
+                const isPlaying = playingId === sound.file;
+                return (
+                  <div
+                    key={sound.file}
+                    className={`sound-btn ${isPlaying ? 'playing' : ''}`}
+                  >
+                    <button
+                      className="sound-preview-btn"
+                      onClick={() => handlePreview(sound)}
+                      title={`Preview "${sound.label}"`}
+                    >
+                      <span className="sound-emoji">{sound.emoji}</span>
+                      <span className="sound-label">{sound.label}</span>
+                    </button>
+                    <button
+                      className="sound-add-btn"
+                      onClick={() => handleAddToTimeline(sound)}
+                      title={`Add "${sound.label}" to SFX track`}
+                    >
+                      <Plus size={12} />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
+
+        {filteredCategories.length === 0 && (
+          <div style={{
+            textAlign: 'center',
+            padding: 'var(--space-xl)',
+            color: 'var(--text-muted)',
+            fontSize: '0.813rem',
+          }}>
+            No sounds match "{searchTerm}"
+          </div>
+        )}
       </div>
     </div>
   );
