@@ -27,40 +27,39 @@
 - [x] Thumbnail generator panel
 - [x] Templates system (Figure Review, Unboxing, News, Comparison)
 - [x] Notification toast system
+- [x] Undo/Redo system (50-level history stack + ⌘Z/⌘⇧Z)
+- [x] Background music library (6 synthesized ambient tracks)
+- [x] Enhanced narration panel (Browser TTS fallback, quick scripts, voice preview)
+- [x] Audio Engine (real-time playback sync for SFX, music, narration)
+- [x] Multi-track export pipeline (FFmpeg filter graph mixing all audio + video)
+- [x] Export track summary badges + muted track warnings
+- [x] Captions & text overlay system (6 presets, position/alignment controls, live preview)
+- [x] Transition system (7 types: Fade, Crossfade, Wipe, Zoom, Slide Up)
 
 ---
 
 ## 🔄 In Progress
 
-- [ ] Volume slider integration with actual playback (Web Audio API routing)
-- [ ] Export with multi-track audio mixing
+- [ ] Transition preview CSS animations in video player
+- [ ] Caption burn-in during FFmpeg export
 
 ---
 
 ## 📝 To Do
 
-### Phase 3: AI Narration (Full Integration)
-- [ ] ElevenLabs API real-time generation
-- [ ] Narration placement on timeline at playhead position
-- [ ] Auto-sync narration with video segments
-
-### Phase 4: Sound & Music (Enhancement)
-- [ ] Background music library (loopable tracks)
+### Phase 6: Advanced AI Features
+- [ ] Auto captions (speech-to-text using Web Speech API)
+- [ ] AI-generated thumbnails (canvas-based with text overlays)
 - [ ] Audio ducking (auto-lower music during narration)
-- [ ] Custom SFX upload
-
-### Phase 5: Smart Tools
-- [ ] Auto captions (speech-to-text)
-- [ ] Text overlay system
-- [ ] AI-generated thumbnails (canvas-based)
 - [ ] Batch Auto-Cut (process multiple clips)
 
-### Phase 6: Polish & Ship
+### Phase 7: Polish & Ship
+- [ ] IndexedDB persistence (store file blobs for full project resume)
 - [ ] Performance optimization (Web Worker for FFmpeg)
 - [ ] GitHub remote setup & CI/CD
-- [ ] Deploy to Vercel
+- [ ] Deploy to Vercel/Netlify
 - [ ] Tutorial walkthrough for nephew
-- [ ] Undo/Redo system (history stack)
+- [ ] Custom SFX upload
 
 ---
 
