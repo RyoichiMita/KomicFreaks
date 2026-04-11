@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Film,
   Mic,
@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Keyboard,
   X,
+  Save,
 } from 'lucide-react';
 import './App.css';
 
@@ -43,6 +44,9 @@ function App() {
     isExporting,
     tracks,
     notification,
+    lastSavedAt,
+    saveProject,
+    initAutoSave,
   } = useEditorStore();
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -52,6 +56,24 @@ function App() {
 
   // Register keyboard shortcuts
   useKeyboardShortcuts();
+
+  // Start auto-save
+  useEffect(() => {
+    const cleanup = initAutoSave();
+    return cleanup;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Manual save with Cmd+S
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        saveProject();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [saveProject]);
 
   const hasClips = tracks.some((t) => t.clips.length > 0);
   const clipCount = tracks.reduce((sum, t) => sum + t.clips.length, 0);
@@ -167,6 +189,13 @@ function App() {
         <div className="header-right">
           <button
             className="btn-icon tooltip"
+            data-tooltip="Save (⌘S)"
+            onClick={saveProject}
+          >
+            <Save size={16} />
+          </button>
+          <button
+            className="btn-icon tooltip"
             data-tooltip="Keyboard Shortcuts"
             onClick={() => setShowShortcuts(!showShortcuts)}
           >
@@ -263,10 +292,16 @@ function App() {
           <span>{clipCount} clip{clipCount !== 1 ? 's' : ''} on timeline</span>
         </div>
         <div className="status-right">
+          {lastSavedAt && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Save size={10} />
+              Saved {new Date(lastSavedAt).toLocaleTimeString()}
+            </span>
+          )}
           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sparkles size={10} style={{ color: 'var(--accent-primary)' }} /> AI Powered
           </span>
-          <span>Space = Play/Pause</span>
+          <span>⌘S = Save</span>
         </div>
       </div>
 

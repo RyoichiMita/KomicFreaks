@@ -3,10 +3,18 @@ import {
   Upload,
   Sparkles,
   Film,
+  RotateCcw,
 } from 'lucide-react';
+import { getSavedProjectInfo } from '../../services/projectPersistence';
 
 export default function WelcomeScreen() {
-  const { setActiveTab } = useEditorStore();
+  const { setActiveTab, loadSavedProject } = useEditorStore();
+  const savedInfo = getSavedProjectInfo();
+
+  const handleResume = () => {
+    loadSavedProject();
+    setActiveTab('editor');
+  };
 
   return (
     <div className="welcome-screen">
@@ -26,7 +34,7 @@ export default function WelcomeScreen() {
         </p>
       </div>
 
-      <div className="welcome-actions" style={{ justifyContent: 'center' }}>
+      <div className="welcome-actions" style={{ justifyContent: 'center', gap: 'var(--space-lg)' }}>
         <div
           className="welcome-card welcome-card-hero"
           onClick={() => setActiveTab('editor')}
@@ -37,11 +45,37 @@ export default function WelcomeScreen() {
           >
             <Film size={28} />
           </div>
-          <div className="welcome-card-title" style={{ fontSize: '1rem' }}>Open Editor</div>
+          <div className="welcome-card-title" style={{ fontSize: '1rem' }}>New Project</div>
           <div className="welcome-card-desc">
-            Import your clips, add AI narration, sound effects, and export — all in one place
+            Start fresh — import clips and create something awesome
           </div>
         </div>
+
+        {savedInfo && (
+          <div
+            className="welcome-card welcome-card-hero"
+            onClick={handleResume}
+            style={{ borderColor: 'rgba(124, 58, 237, 0.4)' }}
+          >
+            <div
+              className="welcome-card-icon"
+              style={{ background: 'linear-gradient(135deg, #10b981, #34d399)', color: 'white', width: '56px', height: '56px' }}
+            >
+              <RotateCcw size={28} />
+            </div>
+            <div className="welcome-card-title" style={{ fontSize: '1rem' }}>Resume Project</div>
+            <div className="welcome-card-desc">
+              {savedInfo.projectName} — {savedInfo.clipCount} clip{savedInfo.clipCount !== 1 ? 's' : ''}
+            </div>
+            <div style={{
+              fontSize: '0.625rem',
+              color: 'var(--text-muted)',
+              marginTop: 'var(--space-xs)',
+            }}>
+              Last saved: {savedInfo.savedAtFormatted}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="welcome-features">

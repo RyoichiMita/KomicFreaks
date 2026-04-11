@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { saveProject as persistSave, loadProject, startAutoSave } from '../services/projectPersistence';
 
 // Generate unique IDs
 let idCounter = 0;
@@ -12,6 +13,7 @@ const useEditorStore = create((set, get) => ({
   // --- Project ---
   projectName: 'Untitled Project',
   setProjectName: (name) => set({ projectName: name }),
+  lastSavedAt: null,
 
   // --- Media Library ---
   mediaFiles: [],
@@ -237,6 +239,47 @@ const useEditorStore = create((set, get) => ({
   // --- Active Template ---
   activeTemplate: null,
   setActiveTemplate: (template) => set({ activeTemplate: template }),
+
+  // --- Project Persistence ---
+  saveProject: () => {
+    const state = get();
+    const result = persistSave(state);
+    if (result.success) {
+      set({ lastSavedAt: result.savedAt });
+    }
+    return result;
+  },
+
+  loadSavedProject: () => {
+    const saved = loadProject();
+    if (!saved) return false;
+
+    set({
+      projectName: saved.projectName || 'Untitled Project',
+      tracks: saved.tracks.map((savedTrack) => {
+        const defaultTrack = get().tracks.find((t) => t.id === savedTrack.id);
+        return {
+          ...defaultTrack,
+          ...savedTrack,
+          // Clips from saved state won't have url/file — mark them as needing re-import
+          clips: savedTrack.clips.map((clip) => ({
+            ...clip,
+            needsReimport: !clip.url,
+          })),
+        };
+      }),
+      zoomLevel: saved.zoomLevel || 1,
+      narrationScript: saved.narrationScript || '',
+      selectedVoice: saved.selectedVoice || 'narrator',
+      activeTemplate: saved.activeTemplate || null,
+      lastSavedAt: saved.savedAt,
+    });
+    return true;
+  },
+
+  initAutoSave: () => {
+    return startAutoSave(get);
+  },
 
   // --- Snackbar / Notifications ---
   notification: null,
