@@ -37,28 +37,29 @@
 - [x] Transition system (7 types: Fade, Crossfade, Wipe, Zoom, Slide Up)
 - [x] Auto-Captions (Web Speech API speech-to-text, batch add to timeline)
 - [x] Agent infrastructure (7 agents, 6 workflows from Global Locksmith)
+- [x] Caption burn-in during FFmpeg export (drawtext filters)
+- [x] Transition preview CSS animations in video player
+- [x] Export modal shows captions + transitions count badges
+- [x] IndexedDB blob persistence (full project resume with media files)
+- [x] Deployment configs (vercel.json, netlify.toml, COOP/COEP headers)
 
 ---
 
 ## 🔄 In Progress
 
-- [ ] Caption burn-in during FFmpeg export (drawtext filter)
-- [ ] Transition preview CSS animations in video player
+- [ ] Deploy to Vercel or Netlify (waiting for user to choose platform)
 
 ---
 
 ## 📝 To Do
 
 ### Phase 7: Advanced Polish
-- [ ] IndexedDB persistence (store file blobs for full project resume)
 - [ ] Audio ducking (auto-lower music during narration)
 - [ ] Custom SFX upload
-- [ ] AI-generated thumbnails (canvas-based with text overlays)
+- [ ] Performance optimization (Web Worker for FFmpeg)
 
 ### Phase 8: Ship
-- [ ] Performance optimization (Web Worker for FFmpeg)
 - [ ] GitHub remote setup & CI/CD
-- [ ] Deploy to Vercel/Netlify
 - [ ] Tutorial walkthrough for nephew
 
 ---
