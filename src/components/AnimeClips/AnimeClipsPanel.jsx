@@ -11,9 +11,12 @@ import {
   Tag,
   Volume2,
   Clock,
+  Link,
+  Globe,
 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { storeAnimeClip, getAllAnimeClips, deleteAnimeClip } from '../../services/animeClipsDB';
+import { fetchAudioFromUrl, isYouTubeUrl, checkProxyHealth } from '../../services/audioProxy';
 
 // Pre-built character quick-tags for tagging
 const POPULAR_CHARACTERS = [
@@ -41,7 +44,7 @@ const formatTime = (s) => {
 export default function AnimeClipsPanel() {
   const { addClipToTrack, showNotification, currentTime } = useEditorStore();
 
-  // Tab: 'extract' or 'library'
+  // Tab: 'extract', 'url', or 'library'
   const [activeMode, setActiveMode] = useState('extract');
 
   // --- Extractor state ---
@@ -53,6 +56,12 @@ export default function AnimeClipsPanel() {
   const [inPoint, setInPoint] = useState(null);
   const [outPoint, setOutPoint] = useState(null);
   const [isExtracting, setIsExtracting] = useState(false);
+
+  // --- URL mode state ---
+  const [urlInput, setUrlInput] = useState('');
+  const [urlStatus, setUrlStatus] = useState(''); // status text
+  const [isFetchingUrl, setIsFetchingUrl] = useState(false);
+  const [proxyAvailable, setProxyAvailable] = useState(null);
 
   // --- Tagging state ---
   const [clipName, setClipName] = useState('');
@@ -69,14 +78,51 @@ export default function AnimeClipsPanel() {
   const previewAudioRef = useRef(null);
   const animFrameRef = useRef(null);
 
-  // Load library on mount
+  // Load library and check proxy on mount
   useEffect(() => {
     loadLibrary();
+    checkProxyHealth().then(setProxyAvailable);
   }, []);
 
   const loadLibrary = async () => {
     const clips = await getAllAnimeClips();
     setLibrary(clips.sort((a, b) => b.createdAt - a.createdAt));
+  };
+
+  // --- URL Fetch Handler ---
+  const handleFetchUrl = async () => {
+    if (!urlInput.trim()) {
+      showNotification('Paste a URL first', 'error');
+      return;
+    }
+
+    setIsFetchingUrl(true);
+    setUrlStatus('');
+
+    try {
+      const { blob, type } = await fetchAudioFromUrl(urlInput.trim(), setUrlStatus);
+
+      // Load the fetched audio into the extractor
+      if (episodeUrl) URL.revokeObjectURL(episodeUrl);
+
+      const url = URL.createObjectURL(blob);
+      setEpisodeFile({ name: type === 'youtube' ? `YouTube: ${urlInput.trim().slice(0, 40)}...` : urlInput.trim().split('/').pop() || 'Remote audio' });
+      setEpisodeUrl(url);
+      setInPoint(null);
+      setOutPoint(null);
+      setIsPlayingEp(false);
+
+      // Switch to extract mode so user can set in/out points
+      setActiveMode('extract');
+      setUrlStatus('');
+      showNotification('✅ Audio loaded — set IN/OUT points to extract clips', 'success');
+    } catch (err) {
+      console.error('URL fetch failed:', err);
+      setUrlStatus('');
+      showNotification(`Failed: ${err.message}`, 'error');
+    } finally {
+      setIsFetchingUrl(false);
+    }
   };
 
   // --- Episode File Handling ---
@@ -339,18 +385,26 @@ export default function AnimeClipsPanel() {
       <div style={{ display: 'flex', gap: '2px', marginBottom: 'var(--space-sm)' }}>
         <button
           className={`btn ${activeMode === 'extract' ? 'btn-primary' : 'btn-ghost'}`}
-          style={{ flex: 1, justifyContent: 'center', fontSize: '0.688rem' }}
+          style={{ flex: 1, justifyContent: 'center', fontSize: '0.625rem', padding: '6px 4px' }}
           onClick={() => setActiveMode('extract')}
         >
-          <Scissors size={14} />
-          Extract
+          <Scissors size={12} />
+          File
+        </button>
+        <button
+          className={`btn ${activeMode === 'url' ? 'btn-primary' : 'btn-ghost'}`}
+          style={{ flex: 1, justifyContent: 'center', fontSize: '0.625rem', padding: '6px 4px' }}
+          onClick={() => setActiveMode('url')}
+        >
+          <Link size={12} />
+          URL
         </button>
         <button
           className={`btn ${activeMode === 'library' ? 'btn-primary' : 'btn-ghost'}`}
-          style={{ flex: 1, justifyContent: 'center', fontSize: '0.688rem' }}
+          style={{ flex: 1, justifyContent: 'center', fontSize: '0.625rem', padding: '6px 4px' }}
           onClick={() => setActiveMode('library')}
         >
-          <Clapperboard size={14} />
+          <Clapperboard size={12} />
           Library ({library.length})
         </button>
       </div>
@@ -560,6 +614,105 @@ export default function AnimeClipsPanel() {
               </button>
             </>
           )}
+        </div>
+      )}
+
+      {/* ======== URL MODE ======== */}
+      {activeMode === 'url' && (
+        <div className="ai-card">
+          <div className="ai-card-header">
+            <div
+              className="ai-card-icon"
+              style={{ background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' }}
+            >
+              <Globe size={20} color="white" />
+            </div>
+            <div>
+              <div className="ai-card-title">From URL</div>
+              <div className="ai-card-description">
+                YouTube or direct video/audio links
+              </div>
+            </div>
+          </div>
+
+          {/* Proxy status */}
+          <div className="anime-proxy-status">
+            <div
+              className="anime-proxy-dot"
+              style={{ background: proxyAvailable === true ? 'var(--accent-success)' : proxyAvailable === false ? 'var(--accent-error)' : 'var(--text-muted)' }}
+            />
+            <span style={{ fontSize: '0.625rem', color: 'var(--text-muted)' }}>
+              {proxyAvailable === true ? 'Proxy connected' : proxyAvailable === false ? 'Proxy offline — deploy worker first' : 'Checking proxy...'}
+            </span>
+          </div>
+
+          {/* URL Input */}
+          <div style={{ marginTop: 'var(--space-sm)' }}>
+            <div className="anime-url-input-row">
+              <input
+                className="input"
+                placeholder="Paste YouTube or video URL..."
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleFetchUrl()}
+                style={{ flex: 1 }}
+              />
+            </div>
+
+            {/* URL type indicator */}
+            {urlInput.trim() && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                {isYouTubeUrl(urlInput) ? (
+                  <>
+                    <Play size={14} style={{ color: '#ef4444' }} />
+                    <span style={{ fontSize: '0.625rem', color: 'var(--text-secondary)' }}>YouTube — audio will be extracted</span>
+                  </>
+                ) : (
+                  <>
+                    <Globe size={14} style={{ color: 'var(--accent-primary-light)' }} />
+                    <span style={{ fontSize: '0.625rem', color: 'var(--text-secondary)' }}>Direct URL — will try direct + proxy</span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Status */}
+            {urlStatus && (
+              <div className="anime-url-status">
+                <div className="spinner" style={{ width: '12px', height: '12px' }} />
+                {urlStatus}
+              </div>
+            )}
+
+            {/* Fetch Button */}
+            <button
+              className="btn btn-primary"
+              style={{ width: '100%', justifyContent: 'center', marginTop: 'var(--space-md)' }}
+              onClick={handleFetchUrl}
+              disabled={!urlInput.trim() || isFetchingUrl || proxyAvailable === false}
+            >
+              {isFetchingUrl ? (
+                <>
+                  <div className="spinner" />
+                  Fetching...
+                </>
+              ) : (
+                <>
+                  <Link size={14} />
+                  Fetch Audio
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* How it works */}
+          <div className="anime-url-help">
+            <div style={{ fontSize: '0.688rem', fontWeight: 600, marginBottom: '4px' }}>How it works</div>
+            <div className="anime-url-step">1. Paste a YouTube or video URL above</div>
+            <div className="anime-url-step">2. Audio is fetched via your Cloudflare Worker</div>
+            <div className="anime-url-step">3. Loaded into the scrubber — set IN/OUT points</div>
+            <div className="anime-url-step">4. Extract and tag your clips</div>
+          </div>
         </div>
       )}
 

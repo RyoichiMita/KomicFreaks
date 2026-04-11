@@ -2784,6 +2784,52 @@
   flex-shrink: 0;
 }
 
+/* --- URL Mode --- */
+.anime-proxy-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-deep);
+  border: 1px solid var(--border-default);
+}
+
+.anime-proxy-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.anime-url-input-row {
+  display: flex;
+  gap: 4px;
+}
+
+.anime-url-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+.anime-url-help {
+  margin-top: var(--space-md);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.anime-url-step {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  padding: 2px 0;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     display: none;
