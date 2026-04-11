@@ -247,7 +247,7 @@ function App() {
 
             {/* Tool Panel — slides open when a tool is active */}
             {toolPanel && (
-              <div className="properties-panel" style={{ overflowY: 'auto' }}>
+              <div className="properties-panel">
                 <div className="properties-header">
                   <div className="properties-title">
                     {activeToolData?.title}

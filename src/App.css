@@ -946,6 +946,7 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: center;
+  position: relative;
 }
 
 .voice-option:hover {
@@ -956,6 +957,34 @@
 .voice-option.selected {
   border-color: var(--accent-primary);
   background: rgba(124, 58, 237, 0.1);
+}
+
+.voice-preview-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-deep);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  opacity: 0;
+}
+
+.voice-option:hover .voice-preview-btn {
+  opacity: 1;
+}
+
+.voice-preview-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
 }
 
 .voice-name {
