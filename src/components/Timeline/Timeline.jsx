@@ -9,6 +9,7 @@ import {
   Scissors,
   Trash2,
   Volume2,
+  Volume1,
   VolumeX,
 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
@@ -35,6 +36,7 @@ export default function Timeline() {
     updateClipOnTrack,
     moveClip,
     toggleTrackMute,
+    setTrackVolume,
     setCurrentTime,
     getTotalDuration,
   } = useEditorStore();
@@ -283,12 +285,30 @@ export default function Timeline() {
                       <div className={`track-label-icon ${track.type}`}>
                         <IconComponent size={12} />
                       </div>
-                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span className="track-label-name">
                         {track.label}
                       </span>
+                      <div className="track-volume-control">
+                        <input
+                          type="range"
+                          className="track-volume-slider"
+                          min="0"
+                          max="1"
+                          step="0.05"
+                          value={track.muted ? 0 : track.volume}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            const vol = parseFloat(e.target.value);
+                            setTrackVolume(track.id, vol);
+                            if (vol > 0 && track.muted) toggleTrackMute(track.id);
+                          }}
+                          title={`Volume: ${Math.round((track.muted ? 0 : track.volume) * 100)}%`}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
                       <button
                         className="btn-icon"
-                        style={{ width: '20px', height: '20px' }}
+                        style={{ width: '20px', height: '20px', flexShrink: 0 }}
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleTrackMute(track.id);
@@ -297,6 +317,8 @@ export default function Timeline() {
                       >
                         {track.muted ? (
                           <VolumeX size={10} style={{ color: 'var(--accent-danger)' }} />
+                        ) : track.volume < 0.5 ? (
+                          <Volume1 size={10} />
                         ) : (
                           <Volume2 size={10} />
                         )}

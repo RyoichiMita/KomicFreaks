@@ -139,14 +139,13 @@ export default function AutoCutModal({ onClose, videoClip }) {
     }
 
     // Build new clips from kept segments
-    let offset = 0;
     const newClips = keptSegments.map((seg, i) => ({
       name: `${videoClip.name || 'Clip'} #${i + 1}`,
       type: 'video',
       url: videoClip.url,
       file: videoClip.file,
       duration: seg.duration,
-      offset,
+      offset: 0,
       trimStart: seg.start,
       trimEnd: seg.end,
     }));
@@ -158,9 +157,13 @@ export default function AutoCutModal({ onClose, videoClip }) {
       runningOffset += clip.duration;
     }
 
+    // Calculate stats inline
+    const totalKept = keptSegments.reduce((sum, s) => sum + s.duration, 0);
+    const timeSaved = result.duration - totalKept;
+
     replaceTrackClips('video', newClips);
     showNotification(
-      `Auto-cut complete: ${keptSegments.length} segments, saved ${formatDuration(liveStats.timeSaved)}`,
+      `Auto-cut complete: ${keptSegments.length} segments, saved ${formatDuration(timeSaved)}`,
       'success'
     );
     onClose();

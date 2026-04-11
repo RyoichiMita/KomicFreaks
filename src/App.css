@@ -624,14 +624,66 @@
 }
 
 .track-label {
-  width: 100px;
+  width: 130px;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 4px;
   flex-shrink: 0;
+}
+
+.track-label-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.688rem;
+}
+
+.track-volume-control {
+  display: flex;
+  align-items: center;
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.track-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bg-hover);
+  outline: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.track-label:hover .track-volume-slider {
+  opacity: 1;
+}
+
+.track-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-primary-light);
+  cursor: pointer;
+  border: none;
+}
+
+.track-volume-slider::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-primary-light);
+  cursor: pointer;
+  border: none;
 }
 
 .track-label-icon {
@@ -1557,10 +1609,6 @@
   background: var(--accent-danger);
 }
 
-/* --- Track label width update for drag --- */
-.track-label {
-  width: 120px;
-}
 
 /* --- Disabled button --- */
 .btn:disabled,

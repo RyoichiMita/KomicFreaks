@@ -241,10 +241,11 @@ const useEditorStore = create((set, get) => ({
   // --- Snackbar / Notifications ---
   notification: null,
   showNotification: (message, type = 'info') => {
-    set({ notification: { message, type, id: Date.now() } });
+    const id = Date.now();
+    set({ notification: { message, type, id } });
     setTimeout(() => {
       set((state) => {
-        if (state.notification?.id === Date.now()) {
+        if (state.notification?.id === id) {
           return { notification: null };
         }
         return {};
