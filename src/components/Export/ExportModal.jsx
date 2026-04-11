@@ -1,7 +1,15 @@
-import { useState, useCallback } from 'react';
-import { Download, X, Loader, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useCallback, useMemo } from 'react';
+import { Download, X, Loader, CheckCircle, AlertCircle, Volume2, Music, Mic, Sparkles } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
-import { getFFmpeg, exportForYouTube, concatenateVideos } from '../../services/ffmpeg';
+import { getFFmpeg, exportMultiTrack } from '../../services/ffmpeg';
+
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
+}
 
 export default function ExportModal({ onClose }) {
   const {
@@ -13,15 +21,32 @@ export default function ExportModal({ onClose }) {
     setIsExporting,
     setExportProgress,
     setExportStatus,
+    showNotification,
   } = useEditorStore();
 
   const [exportedUrl, setExportedUrl] = useState(null);
+  const [exportedSize, setExportedSize] = useState(0);
   const [error, setError] = useState(null);
   const [ffmpegReady, setFfmpegReady] = useState(false);
   const [loadingFFmpeg, setLoadingFFmpeg] = useState(false);
 
   const videoClips = tracks.find((t) => t.id === 'video')?.clips || [];
+  const audioClips = tracks.find((t) => t.id === 'audio')?.clips || [];
+  const narrationClips = tracks.find((t) => t.id === 'narration')?.clips || [];
+  const sfxClips = tracks.find((t) => t.id === 'sfx')?.clips || [];
+
   const hasContent = videoClips.length > 0;
+  const totalClips = videoClips.length + audioClips.length + narrationClips.length + sfxClips.length;
+
+  // Summary of what will be exported
+  const trackSummary = useMemo(() => {
+    const items = [];
+    if (videoClips.length > 0) items.push({ icon: '🎬', label: 'Video', count: videoClips.length });
+    if (audioClips.length > 0) items.push({ icon: '🎵', label: 'Music', count: audioClips.length });
+    if (narrationClips.length > 0) items.push({ icon: '🎙️', label: 'Narration', count: narrationClips.length });
+    if (sfxClips.length > 0) items.push({ icon: '✨', label: 'SFX', count: sfxClips.length });
+    return items;
+  }, [videoClips.length, audioClips.length, narrationClips.length, sfxClips.length]);
 
   const handleLoadFFmpeg = useCallback(async () => {
     setLoadingFFmpeg(true);
@@ -42,36 +67,22 @@ export default function ExportModal({ onClose }) {
 
     setIsExporting(true);
     setExportProgress(0);
-    setExportStatus('Preparing video...');
+    setExportStatus('Starting export...');
     setError(null);
 
     try {
-      // Get video clips that have actual URLs
-      const clipsWithUrls = videoClips
-        .filter((c) => c.url)
-        .sort((a, b) => (a.offset || 0) - (b.offset || 0));
-
-      if (clipsWithUrls.length === 0) {
-        throw new Error('No video clips with media to export. Add some video files first!');
-      }
-
-      let result;
-
-      if (clipsWithUrls.length === 1) {
-        setExportStatus('Exporting video for YouTube...');
-        result = await exportForYouTube(clipsWithUrls[0].url, (progress) => {
-          setExportProgress(progress);
-        });
-      } else {
-        setExportStatus(`Merging ${clipsWithUrls.length} clips...`);
-        result = await concatenateVideos(clipsWithUrls, (progress) => {
-          setExportProgress(progress);
-        });
-      }
+      const result = await exportMultiTrack(
+        tracks,
+        projectName,
+        (progress) => setExportProgress(progress),
+        (status) => setExportStatus(status)
+      );
 
       setExportedUrl(result.url);
+      setExportedSize(result.size);
       setExportStatus('Export complete! 🎉');
       setExportProgress(100);
+      showNotification('Video exported successfully!', 'success');
     } catch (err) {
       setError(err.message || 'Export failed. Please try again.');
       setExportStatus('');
@@ -79,7 +90,7 @@ export default function ExportModal({ onClose }) {
     } finally {
       setIsExporting(false);
     }
-  }, [hasContent, videoClips, setIsExporting, setExportProgress, setExportStatus]);
+  }, [hasContent, tracks, projectName, setIsExporting, setExportProgress, setExportStatus, showNotification]);
 
   const handleDownload = () => {
     if (!exportedUrl) return;
@@ -123,11 +134,42 @@ export default function ExportModal({ onClose }) {
                 <span className="property-label">Frame Rate</span>
                 <span className="property-value">30 fps</span>
               </div>
-              <div className="property-row">
-                <span className="property-label">Video Clips</span>
-                <span className="property-value">{videoClips.length}</span>
-              </div>
             </div>
+
+            {/* Track Summary */}
+            <div className="property-group">
+              <div className="property-group-title">Tracks to Export</div>
+              {trackSummary.length > 0 ? (
+                <div className="export-track-summary">
+                  {trackSummary.map((item) => (
+                    <div key={item.label} className="export-track-badge">
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                      <span className="export-track-count">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.813rem' }}>
+                  No clips on timeline
+                </div>
+              )}
+            </div>
+
+            {/* Muted track warning */}
+            {tracks.some((t) => t.muted && t.clips.length > 0) && (
+              <div style={{
+                padding: 'var(--space-sm) var(--space-md)',
+                background: 'rgba(250, 204, 21, 0.1)',
+                border: '1px solid rgba(250, 204, 21, 0.3)',
+                borderRadius: 'var(--radius-md)',
+                color: '#fbbf24',
+                fontSize: '0.75rem',
+                marginBottom: 'var(--space-md)',
+              }}>
+                ⚠️ Some tracks are muted and will be excluded from the export.
+              </div>
+            )}
           </div>
 
           {/* FFmpeg Load Step */}
@@ -189,7 +231,7 @@ export default function ExportModal({ onClose }) {
               <div>
                 <div style={{ fontWeight: 600, marginBottom: '4px' }}>Video Ready!</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
-                  Your video has been exported and is ready to download.
+                  File size: {formatBytes(exportedSize)} • {totalClips} clip{totalClips !== 1 ? 's' : ''} merged
                 </div>
               </div>
             </div>

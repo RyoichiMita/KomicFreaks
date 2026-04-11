@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Maximize } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatTime } from '../../utils/helpers';
+import audioEngine from '../../services/audioEngine';
 
 export default function Preview() {
   const videoRef = useRef(null);
@@ -80,7 +81,7 @@ export default function Preview() {
     }
   }, [videoClips.length, hasVideo, getTotalDuration, setDuration]);
 
-  // Play/pause with segment awareness
+  // Play/pause with segment awareness + audio engine sync
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -93,6 +94,9 @@ export default function Preview() {
         lastClipIdRef.current = activeClip.id;
         video.play().catch(() => {});
       }
+
+      // Start audio engine (syncs all non-video audio)
+      audioEngine.start(useEditorStore.getState);
 
       // Use requestAnimationFrame to track playback across segments
       const tick = () => {
@@ -116,8 +120,9 @@ export default function Preview() {
               lastClipIdRef.current = nextClip.id;
               setCurrentTime(clipEnd);
             } else {
-              // End of all clips
+              // End of all clips — pause everything
               video.pause();
+              audioEngine.pause();
               useEditorStore.getState().pause();
               return;
             }
@@ -130,8 +135,9 @@ export default function Preview() {
             setCurrentTime(newTimelineTime);
           }
         } else {
-          // Between clips or past end
+          // Between clips or past end — pause everything
           video.pause();
+          audioEngine.pause();
           useEditorStore.getState().pause();
           return;
         }
@@ -142,6 +148,7 @@ export default function Preview() {
       animFrameRef.current = requestAnimationFrame(tick);
     } else {
       video.pause();
+      audioEngine.pause();
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current);
         animFrameRef.current = null;
@@ -156,12 +163,27 @@ export default function Preview() {
     };
   }, [isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync volume
+  // Sync audio engine when timeline position changes (seek)
+  useEffect(() => {
+    if (!isPlaying) {
+      audioEngine.syncToTime(tracks, currentTime);
+    }
+  }, [currentTime, isPlaying, tracks]);
+
+  // Sync video track volume
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.volume = volume;
+      const vTrack = tracks.find((t) => t.id === 'video');
+      videoRef.current.volume = vTrack?.muted ? 0 : (vTrack?.volume ?? 1) * volume;
     }
-  }, [volume]);
+  }, [volume, tracks]);
+
+  // Cleanup audio engine on unmount
+  useEffect(() => {
+    return () => {
+      audioEngine.destroy();
+    };
+  }, []);
 
   // Seek when currentTime changes externally (keyboard/click)
   useEffect(() => {
@@ -178,6 +200,7 @@ export default function Preview() {
   }, [currentTime, isPlaying, findActiveClip, getSourceTime]);
 
   const handleEnded = () => {
+    audioEngine.pause();
     pause();
     setCurrentTime(0);
   };
@@ -189,6 +212,7 @@ export default function Preview() {
     if (videoRef.current && activeClip) {
       videoRef.current.currentTime = getSourceTime(activeClip, newTime);
     }
+    audioEngine.syncToTime(tracks, newTime);
   };
 
   const handleSkipForward = () => {
@@ -199,6 +223,7 @@ export default function Preview() {
     if (videoRef.current && activeClip) {
       videoRef.current.currentTime = getSourceTime(activeClip, newTime);
     }
+    audioEngine.syncToTime(tracks, newTime);
   };
 
   const handleFullscreen = () => {
@@ -223,6 +248,7 @@ export default function Preview() {
     if (activeClip) {
       videoRef.current.currentTime = getSourceTime(activeClip, newTime);
     }
+    audioEngine.syncToTime(tracks, newTime);
   };
 
   return (

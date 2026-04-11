@@ -1682,6 +1682,38 @@
   margin-bottom: var(--space-lg);
 }
 
+.export-track-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.export-track-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  font-size: 0.688rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.export-track-count {
+  background: var(--accent-primary);
+  color: white;
+  font-size: 0.563rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* --- Keyboard Shortcuts Modal --- */
 .shortcuts-modal {
   max-width: 600px;
