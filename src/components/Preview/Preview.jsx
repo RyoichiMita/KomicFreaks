@@ -1,10 +1,12 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Maximize } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatTime } from '../../utils/helpers';
 
 export default function Preview() {
   const videoRef = useRef(null);
+  const animFrameRef = useRef(null);
+  const lastClipIdRef = useRef(null);
   const {
     tracks,
     isPlaying,
@@ -15,32 +17,144 @@ export default function Preview() {
     setDuration,
     pause,
     volume,
+    getTotalDuration,
   } = useEditorStore();
 
-  // Get the first video clip for preview
+  // Get ordered video clips
   const videoTrack = tracks.find((t) => t.id === 'video');
-  const firstVideoClip = videoTrack?.clips.find((c) => c.url);
+  const videoClips = videoTrack?.clips
+    ?.slice()
+    .sort((a, b) => (a.offset || 0) - (b.offset || 0)) || [];
+  const hasVideo = videoClips.some((c) => c.url);
 
+  // Find which clip the current timeline time falls in
+  const findActiveClip = useCallback(
+    (time) => {
+      for (const clip of videoClips) {
+        const start = clip.offset || 0;
+        const end = start + (clip.duration || 0);
+        if (time >= start && time < end) {
+          return clip;
+        }
+      }
+      return null;
+    },
+    [videoClips]
+  );
+
+  // Map timeline time → source video time
+  const getSourceTime = useCallback(
+    (clip, timelineTime) => {
+      const clipStart = clip.offset || 0;
+      const localTime = timelineTime - clipStart;
+
+      // If clip has trimStart, offset into the source
+      if (clip.trimStart != null) {
+        return clip.trimStart + localTime;
+      }
+      return localTime;
+    },
+    []
+  );
+
+  // Set video source from first available clip
   useEffect(() => {
-    if (videoRef.current && firstVideoClip) {
-      if (videoRef.current.src !== firstVideoClip.url) {
-        videoRef.current.src = firstVideoClip.url;
+    const firstClip = videoClips.find((c) => c.url);
+    if (videoRef.current && firstClip) {
+      if (videoRef.current.src !== firstClip.url) {
+        videoRef.current.src = firstClip.url;
         videoRef.current.onloadedmetadata = () => {
-          setDuration(videoRef.current.duration);
+          // Use total timeline duration, not the video file duration
+          const totalDur = getTotalDuration();
+          setDuration(totalDur);
         };
       }
     }
-  }, [firstVideoClip, setDuration]);
+  }, [videoClips, setDuration, getTotalDuration]);
 
+  // Update total duration when clips change
   useEffect(() => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
+    if (hasVideo) {
+      const totalDur = getTotalDuration();
+      if (totalDur > 0) setDuration(totalDur);
+    }
+  }, [videoClips.length, hasVideo, getTotalDuration, setDuration]);
+
+  // Play/pause with segment awareness
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      const activeClip = findActiveClip(currentTime);
+      if (activeClip) {
+        const sourceTime = getSourceTime(activeClip, currentTime);
+        video.currentTime = sourceTime;
+        lastClipIdRef.current = activeClip.id;
+        video.play().catch(() => {});
+      }
+
+      // Use requestAnimationFrame to track playback across segments
+      const tick = () => {
+        if (!video || video.paused) return;
+
+        const state = useEditorStore.getState();
+        const ct = state.currentTime;
+        const activeClip = findActiveClip(ct);
+
+        if (activeClip) {
+          const clipEnd = (activeClip.offset || 0) + (activeClip.duration || 0);
+          const sourceEnd = activeClip.trimEnd != null ? activeClip.trimEnd : (activeClip.duration || 0);
+
+          // Check if we've reached the end of this segment in source time
+          if (video.currentTime >= sourceEnd - 0.05) {
+            // Move to next segment
+            const nextClip = findActiveClip(clipEnd + 0.01);
+            if (nextClip) {
+              const nextSourceTime = getSourceTime(nextClip, clipEnd);
+              video.currentTime = nextSourceTime;
+              lastClipIdRef.current = nextClip.id;
+              setCurrentTime(clipEnd);
+            } else {
+              // End of all clips
+              video.pause();
+              useEditorStore.getState().pause();
+              return;
+            }
+          } else {
+            // Update timeline time based on how far we are in this clip
+            const clipStart = activeClip.offset || 0;
+            const trimStart = activeClip.trimStart || 0;
+            const localSourceTime = video.currentTime - trimStart;
+            const newTimelineTime = clipStart + localSourceTime;
+            setCurrentTime(newTimelineTime);
+          }
+        } else {
+          // Between clips or past end
+          video.pause();
+          useEditorStore.getState().pause();
+          return;
+        }
+
+        animFrameRef.current = requestAnimationFrame(tick);
+      };
+
+      animFrameRef.current = requestAnimationFrame(tick);
+    } else {
+      video.pause();
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = null;
       }
     }
-  }, [isPlaying]);
+
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = null;
+      }
+    };
+  }, [isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync volume
   useEffect(() => {
@@ -52,18 +166,16 @@ export default function Preview() {
   // Seek when currentTime changes externally (keyboard/click)
   useEffect(() => {
     if (videoRef.current && !isPlaying) {
-      const diff = Math.abs(videoRef.current.currentTime - currentTime);
-      if (diff > 0.5) {
-        videoRef.current.currentTime = currentTime;
+      const activeClip = findActiveClip(currentTime);
+      if (activeClip) {
+        const sourceTime = getSourceTime(activeClip, currentTime);
+        const diff = Math.abs(videoRef.current.currentTime - sourceTime);
+        if (diff > 0.3) {
+          videoRef.current.currentTime = sourceTime;
+        }
       }
     }
-  }, [currentTime, isPlaying]);
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
-    }
-  };
+  }, [currentTime, isPlaying, findActiveClip, getSourceTime]);
 
   const handleEnded = () => {
     pause();
@@ -71,19 +183,21 @@ export default function Preview() {
   };
 
   const handleSkipBack = () => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 5);
-      setCurrentTime(videoRef.current.currentTime);
+    const newTime = Math.max(0, currentTime - 5);
+    setCurrentTime(newTime);
+    const activeClip = findActiveClip(newTime);
+    if (videoRef.current && activeClip) {
+      videoRef.current.currentTime = getSourceTime(activeClip, newTime);
     }
   };
 
   const handleSkipForward = () => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = Math.min(
-        videoRef.current.duration || 0,
-        videoRef.current.currentTime + 5
-      );
-      setCurrentTime(videoRef.current.currentTime);
+    const totalDur = getTotalDuration();
+    const newTime = Math.min(totalDur, currentTime + 5);
+    setCurrentTime(newTime);
+    const activeClip = findActiveClip(newTime);
+    if (videoRef.current && activeClip) {
+      videoRef.current.currentTime = getSourceTime(activeClip, newTime);
     }
   };
 
@@ -94,19 +208,22 @@ export default function Preview() {
     }
   };
 
-  // Progress bar
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  // Progress bar — use getTotalDuration for the total
+  const totalDur = getTotalDuration();
+  const progress = totalDur > 0 ? (currentTime / totalDur) * 100 : 0;
 
   const handleProgressClick = (e) => {
-    if (!videoRef.current || !duration) return;
+    if (!videoRef.current || !totalDur) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const newTime = (x / rect.width) * duration;
-    videoRef.current.currentTime = newTime;
+    const newTime = (x / rect.width) * totalDur;
     setCurrentTime(newTime);
-  };
 
-  const hasVideo = videoTrack?.clips.some((c) => c.url);
+    const activeClip = findActiveClip(newTime);
+    if (activeClip) {
+      videoRef.current.currentTime = getSourceTime(activeClip, newTime);
+    }
+  };
 
   return (
     <div className="preview-panel">
@@ -115,7 +232,6 @@ export default function Preview() {
           <div className="preview-viewport">
             <video
               ref={videoRef}
-              onTimeUpdate={handleTimeUpdate}
               onEnded={handleEnded}
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             />
@@ -146,7 +262,7 @@ export default function Preview() {
               </button>
             </div>
 
-            <span className="timecode">{formatTime(duration)}</span>
+            <span className="timecode">{formatTime(totalDur)}</span>
 
             <button className="btn-icon tooltip" data-tooltip="Fullscreen" onClick={handleFullscreen}>
               <Maximize size={16} />
