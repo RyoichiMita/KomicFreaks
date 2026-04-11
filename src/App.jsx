@@ -10,6 +10,7 @@ import {
   Sparkles,
   ChevronDown,
   Keyboard,
+  Scissors,
   X,
 } from 'lucide-react';
 import './App.css';
@@ -25,9 +26,11 @@ import ThumbnailPanel from './components/Thumbnail/ThumbnailPanel';
 import TemplatesPanel from './components/Templates/TemplatesPanel';
 import WelcomeScreen from './components/Welcome/WelcomeScreen';
 import ExportModal from './components/Export/ExportModal';
+import AutoCutPanel from './components/AutoCut/AutoCutPanel';
 
 const NAV_TABS = [
   { id: 'editor', label: 'Editor', icon: Film },
+  { id: 'autocut', label: 'Auto-Cut', icon: Scissors, badge: 'AI' },
   { id: 'narration', label: 'AI Narration', icon: Mic, badge: 'AI' },
   { id: 'sounds', label: 'Sounds', icon: Volume2 },
   { id: 'thumbnail', label: 'Thumbnails', icon: Image },
@@ -57,6 +60,8 @@ function App() {
 
   const renderRightPanel = () => {
     switch (activeTab) {
+      case 'autocut':
+        return <AutoCutPanel />;
       case 'narration':
         return <NarrationPanel />;
       case 'sounds':
@@ -214,6 +219,7 @@ function App() {
               <div className="properties-panel" style={{ overflowY: 'auto' }}>
                 <div className="properties-header">
                   <div className="properties-title">
+                    {activeTab === 'autocut' && '✂️ AI Auto-Cut'}
                     {activeTab === 'narration' && '🗣️ AI Narration'}
                     {activeTab === 'sounds' && '🎭 Sound Effects'}
                     {activeTab === 'thumbnail' && '🖼️ Thumbnails'}
