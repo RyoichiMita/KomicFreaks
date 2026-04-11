@@ -1,20 +1,25 @@
 /**
- * Project Persistence — localStorage save/load for project state
+ * Project Persistence — localStorage + IndexedDB save/load for project state
  * 
- * Saves: project name, track layout, volumes, zoom, template
- * Does NOT save: File objects, blob URLs (must re-import media)
+ * localStorage: project metadata, track layout, volumes, clip positions
+ * IndexedDB: media file blobs (videos, audio, images)
+ * 
+ * Together they enable full project resume with media re-hydration.
  */
+
+import { storeMediaBlob, getAllMediaBlobs, clearAllMediaBlobs } from './indexedDB';
 
 const STORAGE_KEY = 'komic-freaks-project';
 const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 
 /**
- * Serialize project state for storage.
+ * Serialize project state for localStorage.
  * Strips out non-serializable properties (File, blob URLs).
+ * Now includes caption styles, transitions, and blob keys.
  */
 export function serializeProject(state) {
   return {
-    version: 1,
+    version: 2,
     savedAt: Date.now(),
     projectName: state.projectName,
     tracks: state.tracks.map((track) => ({
@@ -31,9 +36,19 @@ export function serializeProject(state) {
         offset: clip.offset,
         trimStart: clip.trimStart,
         trimEnd: clip.trimEnd,
-        // We store the original filename so user knows which media to re-import
         originalFileName: clip.originalFileName || clip.name,
-        // Don't store: url, file (not serializable)
+        // Caption-specific data
+        text: clip.text,
+        style: clip.style,
+        position: clip.position,
+        alignment: clip.alignment,
+        presetId: clip.presetId,
+        // Transition data
+        transition: clip.transition,
+        // IndexedDB blob reference key
+        blobKey: clip.blobKey || clip.id,
+        // Flag: does this clip have a persisted blob?
+        hasBlobData: !!clip.url,
       })),
     })),
     zoomLevel: state.zoomLevel,
@@ -58,6 +73,32 @@ export function saveProject(state) {
 }
 
 /**
+ * Save media blobs to IndexedDB for all clips that have URLs.
+ * Called during manual save operations.
+ */
+export async function saveMediaBlobs(tracks) {
+  let savedCount = 0;
+
+  for (const track of tracks) {
+    for (const clip of track.clips) {
+      if (clip.url && clip.type !== 'caption') {
+        try {
+          const response = await fetch(clip.url);
+          const blob = await response.blob();
+          const key = clip.blobKey || clip.id;
+          await storeMediaBlob(key, blob, clip.originalFileName || clip.name, blob.type);
+          savedCount++;
+        } catch (err) {
+          console.warn(`Failed to persist blob for clip: ${clip.name}`, err);
+        }
+      }
+    }
+  }
+
+  return savedCount;
+}
+
+/**
  * Load project from localStorage
  */
 export function loadProject() {
@@ -66,7 +107,7 @@ export function loadProject() {
     if (!raw) return null;
 
     const data = JSON.parse(raw);
-    if (!data || data.version !== 1) return null;
+    if (!data || (data.version !== 1 && data.version !== 2)) return null;
 
     return data;
   } catch (err) {
@@ -76,10 +117,45 @@ export function loadProject() {
 }
 
 /**
- * Clear saved project
+ * Restore media blobs from IndexedDB and re-create blob URLs on clips.
+ * Returns tracks with blob URLs restored.
  */
-export function clearSavedProject() {
+export async function restoreMediaBlobs(tracks) {
+  try {
+    const blobs = await getAllMediaBlobs();
+    const blobMap = new Map(blobs.map((b) => [b.id, b]));
+
+    return tracks.map((track) => ({
+      ...track,
+      clips: track.clips.map((clip) => {
+        if (clip.type === 'caption') return clip; // captions don't have blobs
+
+        const key = clip.blobKey || clip.id;
+        const stored = blobMap.get(key);
+
+        if (stored) {
+          return {
+            ...clip,
+            url: URL.createObjectURL(stored.blob),
+            file: new File([stored.blob], stored.name, { type: stored.type }),
+          };
+        }
+
+        return clip; // No blob found — clip will show as missing
+      }),
+    }));
+  } catch (err) {
+    console.error('Failed to restore media blobs:', err);
+    return tracks;
+  }
+}
+
+/**
+ * Clear saved project (localStorage + IndexedDB)
+ */
+export async function clearSavedProject() {
   localStorage.removeItem(STORAGE_KEY);
+  await clearAllMediaBlobs();
 }
 
 /**
@@ -106,6 +182,7 @@ export function getSavedProjectInfo() {
       savedAt: data.savedAt,
       savedAtFormatted: savedDate.toLocaleString(),
       clipCount,
+      version: data.version || 1,
     };
   } catch {
     return null;

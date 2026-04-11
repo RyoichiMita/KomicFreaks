@@ -11,8 +11,8 @@ export default function WelcomeScreen() {
   const { setActiveTab, loadSavedProject } = useEditorStore();
   const savedInfo = getSavedProjectInfo();
 
-  const handleResume = () => {
-    loadSavedProject();
+  const handleResume = async () => {
+    await loadSavedProject();
     setActiveTab('editor');
   };
 

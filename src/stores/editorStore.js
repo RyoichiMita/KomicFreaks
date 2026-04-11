@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { saveProject as persistSave, loadProject, startAutoSave } from '../services/projectPersistence';
+import { saveProject as persistSave, loadProject, startAutoSave, saveMediaBlobs, restoreMediaBlobs } from '../services/projectPersistence';
 import { createHistoryManager } from '../services/history';
 
 // Generate unique IDs
@@ -276,28 +276,52 @@ const useEditorStore = create((set, get) => ({
     const result = persistSave(state);
     if (result.success) {
       set({ lastSavedAt: result.savedAt });
+      // Also persist media blobs to IndexedDB (async, non-blocking)
+      saveMediaBlobs(state.tracks).then((count) => {
+        if (count > 0) {
+          console.log(`[Persist] Saved ${count} media blob(s) to IndexedDB`);
+        }
+      }).catch((err) => {
+        console.warn('[Persist] Failed to save media blobs:', err);
+      });
     }
     return result;
   },
 
-  loadSavedProject: () => {
+  loadSavedProject: async () => {
     const saved = loadProject();
     if (!saved) return false;
 
+    let restoredTracks = saved.tracks.map((savedTrack) => {
+      const defaultTrack = get().tracks.find((t) => t.id === savedTrack.id);
+      return {
+        ...defaultTrack,
+        ...savedTrack,
+        clips: savedTrack.clips.map((clip) => ({
+          ...clip,
+          needsReimport: !clip.url,
+        })),
+      };
+    });
+
+    // Attempt to restore blob URLs from IndexedDB
+    try {
+      restoredTracks = await restoreMediaBlobs(restoredTracks);
+      // Mark clips that got restored
+      restoredTracks = restoredTracks.map((track) => ({
+        ...track,
+        clips: track.clips.map((clip) => ({
+          ...clip,
+          needsReimport: !clip.url,
+        })),
+      }));
+    } catch (err) {
+      console.warn('[Persist] Blob restoration failed:', err);
+    }
+
     set({
       projectName: saved.projectName || 'Untitled Project',
-      tracks: saved.tracks.map((savedTrack) => {
-        const defaultTrack = get().tracks.find((t) => t.id === savedTrack.id);
-        return {
-          ...defaultTrack,
-          ...savedTrack,
-          // Clips from saved state won't have url/file — mark them as needing re-import
-          clips: savedTrack.clips.map((clip) => ({
-            ...clip,
-            needsReimport: !clip.url,
-          })),
-        };
-      }),
+      tracks: restoredTracks,
       zoomLevel: saved.zoomLevel || 1,
       narrationScript: saved.narrationScript || '',
       selectedVoice: saved.selectedVoice || 'narrator',
