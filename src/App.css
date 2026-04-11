@@ -2371,6 +2371,103 @@
   border-color: rgba(6, 182, 212, 0.6) !important;
 }
 
+/* --- Transition System --- */
+.clip-transition-badge {
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-fast);
+  color: var(--text-muted);
+}
+
+.clip-transition-badge:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  transform: translateY(-50%) scale(1.15);
+  color: var(--accent-primary);
+}
+
+.clip-transition-badge.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+}
+
+.transition-picker {
+  position: absolute;
+  top: -8px;
+  left: -10px;
+  transform: translateY(-100%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  min-width: 160px;
+}
+
+.transition-picker-title {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 2px 4px 6px;
+}
+
+.transition-picker-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.transition-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.688rem;
+  transition: all var(--transition-fast);
+}
+
+.transition-option:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.transition-option.selected {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent-primary-light);
+}
+
+.transition-option-icon {
+  font-size: 0.75rem;
+  width: 18px;
+  text-align: center;
+}
+
+.transition-option-name {
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     display: none;

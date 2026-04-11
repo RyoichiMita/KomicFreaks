@@ -18,6 +18,7 @@ import {
 import useEditorStore from '../../stores/editorStore';
 import { formatDuration } from '../../utils/helpers';
 import AutoCutModal from '../AutoCut/AutoCutPanel';
+import { TRANSITION_TYPES } from '../../services/transitionEngine';
 
 const trackIcons = {
   video: Film,
@@ -52,6 +53,7 @@ export default function Timeline() {
   const [dragState, setDragState] = useState(null);
   const [resizeState, setResizeState] = useState(null);
   const [showAutoCut, setShowAutoCut] = useState(false);
+  const [transitionPicker, setTransitionPicker] = useState(null); // { clipId, trackId }
   const timelineBodyRef = useRef(null);
 
   const hasClips = tracks.some((t) => t.clips.length > 0);
@@ -349,7 +351,10 @@ export default function Timeline() {
                       </button>
                     </div>
                     <div className="track-content">
-                      {track.clips.map((clip) => {
+                      {track.clips
+                        .slice()
+                        .sort((a, b) => (a.offset || 0) - (b.offset || 0))
+                        .map((clip, clipIdx, sortedClips) => {
                         const left = (clip.offset || 0) * pixelsPerSecond;
                         const width = Math.max(
                           (clip.duration || 5) * pixelsPerSecond,
@@ -358,6 +363,11 @@ export default function Timeline() {
                         const isSelected = selectedClipId === clip.id;
                         const isDragging = dragState?.clipId === clip.id;
                         const isResizing = resizeState?.clipId === clip.id;
+                        const isVideoTrack = track.type === 'video';
+                        const hasTransition = clip.transition && clip.transition.type !== 'none';
+                        const transType = TRANSITION_TYPES.find(
+                          (t) => t.id === (clip.transition?.type || 'none')
+                        );
 
                         return (
                           <div
@@ -383,6 +393,58 @@ export default function Timeline() {
                                 handleResizeMouseDown(e, clip, track.id, 'left')
                               }
                             />
+
+                            {/* Transition badge (video clips only, not first clip) */}
+                            {isVideoTrack && clipIdx > 0 && (
+                              <button
+                                className={`clip-transition-badge ${hasTransition ? 'active' : ''}`}
+                                title={hasTransition ? `Transition: ${transType?.name}` : 'Add transition'}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTransitionPicker(
+                                    transitionPicker?.clipId === clip.id
+                                      ? null
+                                      : { clipId: clip.id, trackId: track.id }
+                                  );
+                                }}
+                              >
+                                {hasTransition ? transType?.icon : '✦'}
+                              </button>
+                            )}
+
+                            {/* Transition Picker Popup */}
+                            {transitionPicker?.clipId === clip.id && (
+                              <div
+                                className="transition-picker"
+                                onClick={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                              >
+                                <div className="transition-picker-title">Transition</div>
+                                <div className="transition-picker-grid">
+                                  {TRANSITION_TYPES.map((t) => (
+                                    <button
+                                      key={t.id}
+                                      className={`transition-option ${
+                                        (clip.transition?.type || 'none') === t.id ? 'selected' : ''
+                                      }`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        updateClipOnTrack(track.id, clip.id, {
+                                          transition: {
+                                            type: t.id,
+                                            duration: clip.transition?.duration || 0.5,
+                                          },
+                                        });
+                                        setTransitionPicker(null);
+                                      }}
+                                    >
+                                      <span className="transition-option-icon">{t.icon}</span>
+                                      <span className="transition-option-name">{t.name}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
 
                             {/* Clip label */}
                             <span className="clip-label">
