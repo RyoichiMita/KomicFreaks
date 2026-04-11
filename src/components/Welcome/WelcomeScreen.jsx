@@ -1,12 +1,10 @@
 import useEditorStore from '../../stores/editorStore';
 import {
-  Film,
+  Upload,
   Mic,
   Volume2,
   Image,
-  MessageSquare,
   Layout,
-  Upload,
   Sparkles,
 } from 'lucide-react';
 
@@ -54,7 +52,11 @@ export default function WelcomeScreen() {
   return (
     <div className="welcome-screen">
       <div className="welcome-hero">
-        <div className="welcome-logo">🎬</div>
+        <img
+          src="/logo.png"
+          alt="Komic Freaks"
+          className="welcome-logo-img"
+        />
         <h1 className="welcome-title">
           <span className="glow-text">Komic Freaks</span>{' '}
           <span style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>Studio</span>

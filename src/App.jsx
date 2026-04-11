@@ -4,17 +4,18 @@ import {
   Mic,
   Volume2,
   Image,
-  MessageSquare,
   Layout,
   Download,
   Settings,
-  Home,
   Sparkles,
   ChevronDown,
+  Keyboard,
+  X,
 } from 'lucide-react';
 import './App.css';
 
 import useEditorStore from './stores/editorStore';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import Sidebar from './components/Sidebar/Sidebar';
 import Preview from './components/Preview/Preview';
 import Timeline from './components/Timeline/Timeline';
@@ -23,6 +24,7 @@ import SoundsPanel from './components/Sounds/SoundsPanel';
 import ThumbnailPanel from './components/Thumbnail/ThumbnailPanel';
 import TemplatesPanel from './components/Templates/TemplatesPanel';
 import WelcomeScreen from './components/Welcome/WelcomeScreen';
+import ExportModal from './components/Export/ExportModal';
 
 const NAV_TABS = [
   { id: 'editor', label: 'Editor', icon: Film },
@@ -40,11 +42,18 @@ function App() {
     setProjectName,
     isExporting,
     tracks,
+    notification,
   } = useEditorStore();
 
   const [isEditingName, setIsEditingName] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
+  // Register keyboard shortcuts
+  useKeyboardShortcuts();
 
   const hasClips = tracks.some((t) => t.clips.length > 0);
+  const clipCount = tracks.reduce((sum, t) => sum + t.clips.length, 0);
 
   const renderRightPanel = () => {
     switch (activeTab) {
@@ -63,15 +72,14 @@ function App() {
 
   const rightPanel = renderRightPanel();
 
+  // --- Welcome screen ---
   if (activeTab === 'welcome') {
     return (
       <div className="app">
-        {/* Header */}
         <header className="header">
           <div className="header-left">
             <div className="logo">
-              <div className="logo-icon">🎬</div>
-              <span className="logo-text">Komic Freaks</span>
+              <img src="/logo.png" alt="Komic Freaks" className="logo-img" />
               <span className="logo-studio">Studio</span>
             </div>
           </div>
@@ -87,7 +95,6 @@ function App() {
           <WelcomeScreen />
         </div>
 
-        {/* Status Bar */}
         <div className="status-bar">
           <div className="status-left">
             <div className="status-item">
@@ -96,21 +103,25 @@ function App() {
             </div>
           </div>
           <div className="status-right">
-            <span>Komic Freaks Studio v1.0</span>
+            <span>v1.0</span>
           </div>
         </div>
       </div>
     );
   }
 
+  // --- Editor ---
   return (
     <div className="app">
       {/* Header */}
       <header className="header">
         <div className="header-left">
-          <div className="logo" onClick={() => setActiveTab('welcome')} style={{ cursor: 'pointer' }}>
-            <div className="logo-icon">🎬</div>
-            <span className="logo-text">Komic Freaks</span>
+          <div
+            className="logo"
+            onClick={() => setActiveTab('welcome')}
+            style={{ cursor: 'pointer' }}
+          >
+            <img src="/logo.png" alt="Komic Freaks" className="logo-img" />
             <span className="logo-studio">Studio</span>
           </div>
 
@@ -158,11 +169,22 @@ function App() {
         </nav>
 
         <div className="header-right">
-          <button className="btn-icon tooltip" data-tooltip="Settings">
+          <button
+            className="btn-icon tooltip"
+            data-tooltip="Keyboard Shortcuts"
+            onClick={() => setShowShortcuts(!showShortcuts)}
+          >
+            <Keyboard size={16} />
+          </button>
+          <button
+            className="btn-icon tooltip"
+            data-tooltip="Settings"
+          >
             <Settings size={16} />
           </button>
           <button
             className="export-btn"
+            onClick={() => setShowExport(true)}
             disabled={!hasClips || isExporting}
           >
             {isExporting ? (
@@ -182,16 +204,12 @@ function App() {
 
       {/* Main Content */}
       <div className="main-content">
-        {/* Sidebar — always shown */}
         <Sidebar />
 
-        {/* Workspace */}
         <div className="workspace">
           <div className="workspace-top">
-            {/* Preview */}
             <Preview />
 
-            {/* Right Panel (conditional) */}
             {rightPanel && (
               <div className="properties-panel" style={{ overflowY: 'auto' }}>
                 <div className="properties-header">
@@ -209,7 +227,6 @@ function App() {
             )}
           </div>
 
-          {/* Timeline */}
           <Timeline />
         </div>
       </div>
@@ -221,15 +238,83 @@ function App() {
             <div className="status-indicator" />
             Ready
           </div>
-          <span>{tracks.reduce((sum, t) => sum + t.clips.length, 0)} clips on timeline</span>
+          <span>{clipCount} clip{clipCount !== 1 ? 's' : ''} on timeline</span>
         </div>
         <div className="status-right">
-          <span>Komic Freaks Studio v1.0</span>
-          <span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Sparkles size={10} style={{ color: 'var(--accent-primary)' }} /> AI Powered
           </span>
+          <span>Space = Play/Pause</span>
         </div>
       </div>
+
+      {/* Export Modal */}
+      {showExport && <ExportModal onClose={() => setShowExport(false)} />}
+
+      {/* Keyboard Shortcuts Modal */}
+      {showShortcuts && (
+        <div className="modal-overlay" onClick={() => setShowShortcuts(false)}>
+          <div className="modal-content shortcuts-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                <Keyboard size={20} />
+                Keyboard Shortcuts
+              </h2>
+              <button className="btn-icon" onClick={() => setShowShortcuts(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="shortcuts-grid">
+                <div className="shortcut-group">
+                  <div className="property-group-title">Playback</div>
+                  <ShortcutRow keys={['Space']} desc="Play / Pause" />
+                  <ShortcutRow keys={['J']} desc="Rewind 5s" />
+                  <ShortcutRow keys={['K']} desc="Play / Pause" />
+                  <ShortcutRow keys={['L']} desc="Forward 5s" />
+                  <ShortcutRow keys={['←']} desc="Back 1s" />
+                  <ShortcutRow keys={['→']} desc="Forward 1s" />
+                  <ShortcutRow keys={['Home']} desc="Go to start" />
+                  <ShortcutRow keys={['End']} desc="Go to end" />
+                </div>
+                <div className="shortcut-group">
+                  <div className="property-group-title">Editing</div>
+                  <ShortcutRow keys={['Del']} desc="Delete selected clip" />
+                  <ShortcutRow keys={['Esc']} desc="Deselect clip" />
+                  <ShortcutRow keys={['⌘', '1']} desc="Editor tab" />
+                  <ShortcutRow keys={['⌘', '2']} desc="AI Narration tab" />
+                  <ShortcutRow keys={['⌘', '3']} desc="Sounds tab" />
+                  <ShortcutRow keys={['⌘', '4']} desc="Thumbnails tab" />
+                  <ShortcutRow keys={['⌘', '5']} desc="Templates tab" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification */}
+      {notification && (
+        <div className={`notification notification-${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ShortcutRow({ keys, desc }) {
+  return (
+    <div className="shortcut-row">
+      <div className="shortcut-keys">
+        {keys.map((key, i) => (
+          <span key={i}>
+            <kbd className="shortcut-key">{key}</kbd>
+            {i < keys.length - 1 && <span style={{ margin: '0 2px', color: 'var(--text-muted)' }}>+</span>}
+          </span>
+        ))}
+      </div>
+      <span className="shortcut-desc">{desc}</span>
     </div>
   );
 }

@@ -1,4 +1,17 @@
-import { Film, Headphones, Mic, Sparkles, ZoomIn, ZoomOut, Scissors, Trash2 } from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import {
+  Film,
+  Headphones,
+  Mic,
+  Sparkles,
+  ZoomIn,
+  ZoomOut,
+  Scissors,
+  Trash2,
+  Volume2,
+  VolumeX,
+  GripVertical,
+} from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatDuration } from '../../utils/helpers';
 
@@ -19,11 +32,107 @@ export default function Timeline() {
     selectedClipId,
     setSelectedClipId,
     removeClipFromTrack,
+    updateClipOnTrack,
+    moveClip,
+    toggleTrackMute,
+    setCurrentTime,
+    getTotalDuration,
   } = useEditorStore();
 
+  const [dragState, setDragState] = useState(null);
+  const [resizeState, setResizeState] = useState(null);
+  const timelineBodyRef = useRef(null);
+
   const hasClips = tracks.some((t) => t.clips.length > 0);
-  const totalDuration = Math.max(duration, 30); // Minimum 30s timeline
-  const timelineWidth = totalDuration * 40 * zoomLevel; // pixels
+  const totalDuration = getTotalDuration();
+  const pixelsPerSecond = 40 * zoomLevel;
+  const timelineWidth = Math.max(totalDuration * pixelsPerSecond + 200, 800);
+  const trackLabelWidth = 120;
+
+  // --- Drag handlers ---
+  const handleClipMouseDown = useCallback(
+    (e, clip, trackId) => {
+      e.stopPropagation();
+      setSelectedClipId(clip.id);
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+
+      setDragState({
+        clipId: clip.id,
+        trackId,
+        startX: e.clientX,
+        initialOffset: clip.offset || 0,
+        grabOffsetX: offsetX,
+      });
+
+      const handleMouseMove = (moveE) => {
+        const deltaX = moveE.clientX - e.clientX;
+        const deltaTime = deltaX / pixelsPerSecond;
+        const newOffset = Math.max(0, (clip.offset || 0) + deltaTime);
+        moveClip(trackId, trackId, clip.id, newOffset);
+      };
+
+      const handleMouseUp = () => {
+        setDragState(null);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [pixelsPerSecond, setSelectedClipId, moveClip]
+  );
+
+  // --- Resize handlers ---
+  const handleResizeMouseDown = useCallback(
+    (e, clip, trackId, edge) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const handleMouseMove = (moveE) => {
+        const deltaX = moveE.clientX - e.clientX;
+        const deltaTime = deltaX / pixelsPerSecond;
+
+        if (edge === 'right') {
+          const newDuration = Math.max(0.5, (clip.duration || 5) + deltaTime);
+          updateClipOnTrack(trackId, clip.id, { duration: newDuration });
+        } else if (edge === 'left') {
+          const newOffset = Math.max(0, (clip.offset || 0) + deltaTime);
+          const durationDelta = newOffset - (clip.offset || 0);
+          const newDuration = Math.max(0.5, (clip.duration || 5) - durationDelta);
+          updateClipOnTrack(trackId, clip.id, {
+            offset: newOffset,
+            duration: newDuration,
+          });
+        }
+      };
+
+      const handleMouseUp = () => {
+        setResizeState(null);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      setResizeState({ clipId: clip.id, edge });
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [pixelsPerSecond, updateClipOnTrack]
+  );
+
+  // --- Click on timeline to seek ---
+  const handleTimelineClick = useCallback(
+    (e) => {
+      if (!timelineBodyRef.current) return;
+      const rect = timelineBodyRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left + timelineBodyRef.current.scrollLeft - trackLabelWidth;
+      const time = Math.max(0, x / pixelsPerSecond);
+      setCurrentTime(time);
+    },
+    [pixelsPerSecond, setCurrentTime]
+  );
 
   const handleDeleteClip = () => {
     if (!selectedClipId) return;
@@ -39,7 +148,7 @@ export default function Timeline() {
   // Generate ruler marks
   const rulerMarks = [];
   const interval = zoomLevel >= 2 ? 1 : zoomLevel >= 1 ? 2 : 5;
-  for (let i = 0; i <= totalDuration; i += interval) {
+  for (let i = 0; i <= totalDuration + 10; i += interval) {
     rulerMarks.push(i);
   }
 
@@ -55,16 +164,20 @@ export default function Timeline() {
             <>
               <button
                 className="btn-icon tooltip"
-                data-tooltip="Split clip"
+                data-tooltip="Split clip (S)"
                 onClick={() => {}}
               >
                 <Scissors size={14} />
               </button>
               <button
                 className="btn-icon tooltip"
-                data-tooltip="Delete selected"
+                data-tooltip="Delete selected (Del)"
                 onClick={handleDeleteClip}
-                style={selectedClipId ? { color: 'var(--accent-danger)' } : {}}
+                style={
+                  selectedClipId
+                    ? { color: 'var(--accent-danger)' }
+                    : {}
+                }
               >
                 <Trash2 size={14} />
               </button>
@@ -72,6 +185,9 @@ export default function Timeline() {
           )}
         </div>
         <div className="timeline-header-right">
+          <span style={{ fontSize: '0.688rem', color: 'var(--text-muted)', marginRight: 'var(--space-sm)' }}>
+            {formatDuration(totalDuration)}
+          </span>
           <div className="zoom-control">
             <button
               className="btn-icon"
@@ -98,7 +214,10 @@ export default function Timeline() {
         </div>
       </div>
 
-      <div className="timeline-body">
+      <div
+        className="timeline-body"
+        ref={timelineBodyRef}
+      >
         {!hasClips ? (
           <div className="timeline-empty">
             <div className="timeline-empty-text">
@@ -111,29 +230,39 @@ export default function Timeline() {
         ) : (
           <>
             {/* Ruler */}
-            <div className="timeline-ruler" style={{ width: `${timelineWidth + 116}px` }}>
+            <div
+              className="timeline-ruler"
+              style={{ width: `${timelineWidth}px` }}
+              onClick={handleTimelineClick}
+            >
               {rulerMarks.map((time) => (
                 <div key={time}>
                   <span
                     className="ruler-mark"
-                    style={{ left: `${100 + time * 40 * zoomLevel}px` }}
+                    style={{ left: `${trackLabelWidth + time * pixelsPerSecond}px` }}
                   >
                     {formatDuration(time)}
                   </span>
                   <div
                     className="ruler-tick major"
-                    style={{ left: `${100 + time * 40 * zoomLevel}px` }}
+                    style={{ left: `${trackLabelWidth + time * pixelsPerSecond}px` }}
                   />
                 </div>
               ))}
             </div>
 
             {/* Tracks */}
-            <div className="timeline-tracks" style={{ width: `${timelineWidth + 116}px` }}>
+            <div
+              className="timeline-tracks"
+              style={{ width: `${timelineWidth}px` }}
+              onClick={handleTimelineClick}
+            >
               {/* Playhead */}
               <div
                 className="playhead"
-                style={{ left: `${100 + currentTime * 40 * zoomLevel}px` }}
+                style={{
+                  left: `${trackLabelWidth + currentTime * pixelsPerSecond}px`,
+                }}
               />
 
               {tracks.map((track) => {
@@ -144,22 +273,80 @@ export default function Timeline() {
                       <div className={`track-label-icon ${track.type}`}>
                         <IconComponent size={12} />
                       </div>
-                      {track.label}
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {track.label}
+                      </span>
+                      <button
+                        className="btn-icon"
+                        style={{ width: '20px', height: '20px' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleTrackMute(track.id);
+                        }}
+                        title={track.muted ? 'Unmute' : 'Mute'}
+                      >
+                        {track.muted ? (
+                          <VolumeX size={10} style={{ color: 'var(--accent-danger)' }} />
+                        ) : (
+                          <Volume2 size={10} />
+                        )}
+                      </button>
                     </div>
                     <div className="track-content">
                       {track.clips.map((clip) => {
-                        const left = (clip.offset || 0) * 40 * zoomLevel;
-                        const width = Math.max(clip.duration * 40 * zoomLevel, 40);
+                        const left = (clip.offset || 0) * pixelsPerSecond;
+                        const width = Math.max(
+                          (clip.duration || 5) * pixelsPerSecond,
+                          30
+                        );
+                        const isSelected = selectedClipId === clip.id;
+                        const isDragging = dragState?.clipId === clip.id;
+                        const isResizing = resizeState?.clipId === clip.id;
+
                         return (
                           <div
                             key={clip.id}
                             className={`track-clip ${clip.type}-clip ${
-                              selectedClipId === clip.id ? 'selected' : ''
-                            }`}
-                            style={{ left: `${left}px`, width: `${width}px` }}
-                            onClick={() => setSelectedClipId(clip.id)}
+                              isSelected ? 'selected' : ''
+                            } ${isDragging ? 'dragging' : ''}`}
+                            style={{
+                              left: `${left}px`,
+                              width: `${width}px`,
+                              cursor: isDragging ? 'grabbing' : 'grab',
+                              opacity: isDragging ? 0.85 : 1,
+                              zIndex: isSelected ? 5 : 1,
+                            }}
+                            onMouseDown={(e) =>
+                              handleClipMouseDown(e, clip, track.id)
+                            }
                           >
-                            {clip.name}
+                            {/* Left resize handle */}
+                            <div
+                              className="clip-resize-handle clip-resize-left"
+                              onMouseDown={(e) =>
+                                handleResizeMouseDown(e, clip, track.id, 'left')
+                              }
+                            />
+
+                            {/* Clip label */}
+                            <span className="clip-label">
+                              {clip.name}
+                            </span>
+
+                            {/* Duration badge */}
+                            {width > 60 && (
+                              <span className="clip-duration">
+                                {formatDuration(clip.duration || 0)}
+                              </span>
+                            )}
+
+                            {/* Right resize handle */}
+                            <div
+                              className="clip-resize-handle clip-resize-right"
+                              onMouseDown={(e) =>
+                                handleResizeMouseDown(e, clip, track.id, 'right')
+                              }
+                            />
                           </div>
                         );
                       })}

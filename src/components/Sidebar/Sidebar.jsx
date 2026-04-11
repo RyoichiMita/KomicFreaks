@@ -1,140 +1,205 @@
-import { useRef, useCallback } from 'react';
-import { Film, Upload } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import {
+  Upload,
+  Film,
+  FileAudio,
+  Image,
+  Trash2,
+  Plus,
+  FolderOpen,
+} from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatFileSize, formatDuration } from '../../utils/helpers';
 
 export default function Sidebar() {
-  const fileInputRef = useRef(null);
-  const { mediaFiles, addMediaFile, removeMediaFile, addClipToTrack, setActiveTab } = useEditorStore();
+  const {
+    mediaFiles,
+    addMediaFile,
+    removeMediaFile,
+    updateMediaDuration,
+    addClipToTrack,
+    setActiveTab,
+  } = useEditorStore();
 
-  const handleFileSelect = useCallback((e) => {
-    const files = Array.from(e.target.files);
-    files.forEach((file) => {
-      if (file.type.startsWith('video/') || file.type.startsWith('audio/') || file.type.startsWith('image/')) {
+  const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleFiles = (files) => {
+    Array.from(files).forEach((file) => {
+      if (
+        file.type.startsWith('video/') ||
+        file.type.startsWith('audio/') ||
+        file.type.startsWith('image/')
+      ) {
         const mediaItem = addMediaFile(file);
 
-        // Get duration for video/audio files
+        // Auto-detect duration for video/audio files
         if (file.type.startsWith('video/') || file.type.startsWith('audio/')) {
-          const el = document.createElement(file.type.startsWith('video/') ? 'video' : 'audio');
-          el.src = mediaItem.url;
+          const el = document.createElement(
+            file.type.startsWith('video/') ? 'video' : 'audio'
+          );
+          el.preload = 'metadata';
           el.onloadedmetadata = () => {
-            mediaItem.duration = el.duration;
+            updateMediaDuration(mediaItem.id, el.duration);
+            URL.revokeObjectURL(el.src);
           };
+          el.src = URL.createObjectURL(file);
         }
       }
     });
-    e.target.value = '';
-  }, [addMediaFile]);
-
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-    files.forEach((file) => {
-      if (file.type.startsWith('video/') || file.type.startsWith('audio/') || file.type.startsWith('image/')) {
-        addMediaFile(file);
-      }
-    });
-  }, [addMediaFile]);
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
+    setIsDragging(true);
   };
 
-  const handleAddToTimeline = (media) => {
-    const trackId = media.type.startsWith('video/') ? 'video' : 'audio';
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    handleFiles(e.dataTransfer.files);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files.length > 0) {
+      handleFiles(e.target.files);
+    }
+    e.target.value = '';
+  };
+
+  const getFileIcon = (type) => {
+    if (type.startsWith('video/')) return Film;
+    if (type.startsWith('audio/')) return FileAudio;
+    if (type.startsWith('image/')) return Image;
+    return Film;
+  };
+
+  const handleAddToTimeline = (item) => {
+    let trackId = 'video';
+    let clipType = 'video';
+
+    if (item.type.startsWith('audio/')) {
+      trackId = 'audio';
+      clipType = 'audio';
+    } else if (item.type.startsWith('image/')) {
+      trackId = 'video';
+      clipType = 'video';
+    }
+
     addClipToTrack(trackId, {
-      name: media.name,
-      mediaId: media.id,
-      url: media.url,
-      startTime: 0,
-      duration: media.duration || 5,
+      name: item.name,
+      type: clipType,
+      url: item.url,
+      file: item.file,
+      duration: item.duration || 5,
       offset: 0,
-      type: trackId,
     });
+
     setActiveTab('editor');
   };
 
   return (
-    <aside className="sidebar">
+    <div className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-title">
-          <Film size={16} />
+          <FolderOpen size={14} />
           Media
         </div>
         <button
           className="btn-icon tooltip"
-          data-tooltip="Import media"
+          data-tooltip="Import files"
           onClick={() => fileInputRef.current?.click()}
         >
-          <Upload size={16} />
+          <Plus size={16} />
         </button>
       </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        accept="video/*,audio/*,image/*"
-        style={{ display: 'none' }}
-        onChange={handleFileSelect}
-      />
-
-      <div className="sidebar-content" onDrop={handleDrop} onDragOver={handleDragOver}>
-        {mediaFiles.length === 0 ? (
-          <div
-            className="drop-zone"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <div className="drop-zone-icon">
-              <Upload size={24} />
-            </div>
-            <div className="drop-zone-text">Import Media</div>
-            <div className="drop-zone-hint">
-              Drag & drop video, audio, or image files here
-            </div>
+      <div className="sidebar-content">
+        {/* Drop zone */}
+        <div
+          className={`drop-zone ${isDragging ? 'active' : ''}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <div className="drop-zone-icon">
+            <Upload size={22} />
           </div>
-        ) : (
-          <>
-            <div className="sidebar-section">
-              <div className="sidebar-section-title">Imported Files</div>
-              {mediaFiles.map((media) => (
+          <div className="drop-zone-text">Import Media</div>
+          <div className="drop-zone-hint">
+            Drop files here or click to browse
+            <br />
+            MP4, MOV, MP3, WAV, JPG, PNG
+          </div>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="video/*,audio/*,image/*"
+          multiple
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+
+        {/* Media list */}
+        {mediaFiles.length > 0 && (
+          <div className="sidebar-section" style={{ marginTop: 'var(--space-lg)' }}>
+            <div className="sidebar-section-title">
+              Library ({mediaFiles.length})
+            </div>
+
+            {mediaFiles.map((item) => {
+              const FileIcon = getFileIcon(item.type);
+
+              return (
                 <div
-                  key={media.id}
+                  key={item.id}
                   className="media-item"
-                  onClick={() => handleAddToTimeline(media)}
+                  onClick={() => handleAddToTimeline(item)}
                   title="Click to add to timeline"
                 >
                   <div className="media-thumb">
-                    {media.type.startsWith('video/') ? (
-                      <video src={media.url} muted />
+                    {item.type.startsWith('video/') ? (
+                      <video src={item.url} muted />
+                    ) : item.type.startsWith('image/') ? (
+                      <img src={item.url} alt={item.name} />
                     ) : (
                       <div className="media-thumb-icon">
-                        <Film size={16} />
+                        <FileIcon size={18} />
                       </div>
                     )}
                   </div>
                   <div className="media-info">
-                    <div className="media-name">{media.name}</div>
+                    <div className="media-name">{item.name}</div>
                     <div className="media-meta">
-                      {formatFileSize(media.size)}
-                      {media.duration > 0 && ` • ${formatDuration(media.duration)}`}
+                      {formatFileSize(item.size)}
+                      {item.duration > 0 &&
+                        ` • ${formatDuration(item.duration)}`}
                     </div>
                   </div>
+                  <button
+                    className="btn-icon"
+                    style={{ width: '24px', height: '24px', flexShrink: 0 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeMediaFile(item.id);
+                    }}
+                    title="Remove"
+                  >
+                    <Trash2 size={12} />
+                  </button>
                 </div>
-              ))}
-            </div>
-
-            <button
-              className="btn btn-secondary"
-              style={{ width: '100%', justifyContent: 'center' }}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload size={14} />
-              Add More Files
-            </button>
-          </>
+              );
+            })}
+          </div>
         )}
       </div>
-    </aside>
+    </div>
   );
 }
