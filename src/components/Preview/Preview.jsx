@@ -1,8 +1,9 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Maximize } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatTime } from '../../utils/helpers';
 import audioEngine from '../../services/audioEngine';
+import { getTransitionStyle, getTransitionProgress } from '../../services/transitionEngine';
 
 export default function Preview() {
   const videoRef = useRef(null);
@@ -259,7 +260,19 @@ export default function Preview() {
             <video
               ref={videoRef}
               onEnded={handleEnded}
-              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                ...(() => {
+                  // Apply transition effect to video element
+                  const activeClip = findActiveClip(currentTime);
+                  if (!activeClip || !activeClip.transition || activeClip.transition.type === 'none') return {};
+                  const progress = getTransitionProgress(activeClip, currentTime);
+                  if (progress >= 1) return {};
+                  return getTransitionStyle(activeClip.transition.type, progress);
+                })()
+              }}
             />
 
             {/* Caption Overlay */}

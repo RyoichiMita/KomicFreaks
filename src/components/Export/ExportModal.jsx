@@ -34,6 +34,8 @@ export default function ExportModal({ onClose }) {
   const audioClips = tracks.find((t) => t.id === 'audio')?.clips || [];
   const narrationClips = tracks.find((t) => t.id === 'narration')?.clips || [];
   const sfxClips = tracks.find((t) => t.id === 'sfx')?.clips || [];
+  const captionClips = tracks.find((t) => t.id === 'captions')?.clips || [];
+  const transitionCount = videoClips.filter((c) => c.transition && c.transition.type !== 'none').length;
 
   const hasContent = videoClips.length > 0;
   const totalClips = videoClips.length + audioClips.length + narrationClips.length + sfxClips.length;
@@ -45,8 +47,10 @@ export default function ExportModal({ onClose }) {
     if (audioClips.length > 0) items.push({ icon: '🎵', label: 'Music', count: audioClips.length });
     if (narrationClips.length > 0) items.push({ icon: '🎙️', label: 'Narration', count: narrationClips.length });
     if (sfxClips.length > 0) items.push({ icon: '✨', label: 'SFX', count: sfxClips.length });
+    if (captionClips.length > 0) items.push({ icon: '📝', label: 'Captions', count: captionClips.length });
+    if (transitionCount > 0) items.push({ icon: '🔀', label: 'Transitions', count: transitionCount });
     return items;
-  }, [videoClips.length, audioClips.length, narrationClips.length, sfxClips.length]);
+  }, [videoClips.length, audioClips.length, narrationClips.length, sfxClips.length, captionClips.length, transitionCount]);
 
   const handleLoadFFmpeg = useCallback(async () => {
     setLoadingFFmpeg(true);

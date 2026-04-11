@@ -282,6 +282,79 @@ function getExtension(filename) {
 }
 
 /**
+ * Build FFmpeg drawtext filters from caption clips.
+ * Each caption becomes a drawtext filter with enable='between(t,start,end)'.
+ */
+function buildCaptionFilters(captionClips) {
+  if (!captionClips || captionClips.length === 0) return '';
+
+  const filters = captionClips.map((cap) => {
+    const text = (cap.text || '')
+      .replace(/'/g, "'\\\\\''")
+      .replace(/:/g, '\\\\:')
+      .replace(/\\/g, '\\\\\\\\');
+    const startTime = cap.offset || 0;
+    const endTime = startTime + (cap.duration || 3);
+
+    // Extract style properties with fallbacks
+    const fontSize = parseInt(cap.style?.fontSize) || 24;
+    const fontColor = cap.style?.color || 'white';
+    const fontWeight = cap.style?.fontWeight || '400';
+    const hasBg = cap.style?.bg && cap.style.bg !== 'transparent';
+
+    // Position mapping
+    let yExpr;
+    switch (cap.position) {
+      case 'top':
+        yExpr = 'h*0.08';
+        break;
+      case 'center':
+        yExpr = '(h-text_h)/2';
+        break;
+      case 'bottom':
+      default:
+        yExpr = 'h-text_h-h*0.08';
+        break;
+    }
+
+    // Alignment mapping
+    let xExpr;
+    switch (cap.alignment) {
+      case 'left':
+        xExpr = 'w*0.05';
+        break;
+      case 'right':
+        xExpr = 'w-text_w-w*0.05';
+        break;
+      case 'center':
+      default:
+        xExpr = '(w-text_w)/2';
+        break;
+    }
+
+    let filter = `drawtext=text='${text}'`;
+    filter += `:fontsize=${fontSize}`;
+    filter += `:fontcolor=${fontColor}`;
+    filter += `:x=${xExpr}:y=${yExpr}`;
+    filter += `:enable='between(t,${startTime.toFixed(2)},${endTime.toFixed(2)})'`;
+
+    // Add background box if preset has one
+    if (hasBg) {
+      filter += `:box=1:boxcolor=black@0.7:boxborderw=8`;
+    }
+
+    // Bold text simulation via borderw
+    if (parseInt(fontWeight) >= 700) {
+      filter += `:borderw=2:bordercolor=${fontColor}`;
+    }
+
+    return filter;
+  });
+
+  return filters.join(',');
+}
+
+/**
  * Export with multi-track audio mixing.
  * Takes all tracks from the store and merges them into a single MP4.
  *
@@ -304,6 +377,13 @@ export async function exportMultiTrack(tracks, projectName, onProgress, onStatus
   if (videoClips.length === 0) {
     throw new Error('No video clips to export. Add a video first!');
   }
+
+  // Collect caption clips for burn-in
+  const captionsTrack = tracks.find((t) => t.id === 'captions');
+  const captionClips = (captionsTrack && !captionsTrack.muted)
+    ? (captionsTrack.clips || []).filter((c) => c.text)
+    : [];
+  const captionFilter = buildCaptionFilters(captionClips);
 
   let progressScale = 0;
   const report = (pct) => onProgress && onProgress(Math.min(99, Math.round(pct)));
@@ -403,8 +483,16 @@ export async function exportMultiTrack(tracks, projectName, onProgress, onStatus
       report(50 + progress * 50);
     });
 
-    await ffmpeg.exec([
+    const encodeArgs = [
       '-i', baseVideoFile,
+    ];
+
+    // Add caption drawtext as video filter if captions exist
+    if (captionFilter) {
+      encodeArgs.push('-vf', captionFilter);
+    }
+
+    encodeArgs.push(
       '-c:v', 'libx264',
       '-preset', 'medium',
       '-crf', '18',
@@ -415,7 +503,9 @@ export async function exportMultiTrack(tracks, projectName, onProgress, onStatus
       '-movflags', '+faststart',
       '-r', '30',
       outputName,
-    ]);
+    );
+
+    await ffmpeg.exec(encodeArgs);
   } else {
     onStatus && onStatus(`Mixing ${audioInputs.length} audio track(s)...`);
 
@@ -432,6 +522,11 @@ export async function exportMultiTrack(tracks, projectName, onProgress, onStatus
 
     const totalInputs = audioInputs.length + 1;
     const filterParts = [];
+
+    // If we have captions, apply drawtext to video first
+    if (captionFilter) {
+      filterParts.push(`[0:v]${captionFilter}[v_captioned]`);
+    }
 
     // Extract video's original audio and apply video track volume
     const vTrack = tracks.find((t) => t.id === 'video');
@@ -467,7 +562,7 @@ export async function exportMultiTrack(tracks, projectName, onProgress, onStatus
     await ffmpeg.exec([
       ...args,
       '-filter_complex', filterGraph,
-      '-map', '0:v:0',
+      '-map', captionFilter ? '[v_captioned]' : '0:v:0',
       '-map', '[mixed]',
       '-c:v', 'libx264',
       '-preset', 'medium',
