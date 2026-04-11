@@ -153,6 +153,22 @@ const useEditorStore = create((set, get) => ({
     }));
   },
 
+  replaceTrackClips: (trackId, newClips) => {
+    set((state) => ({
+      tracks: state.tracks.map((track) =>
+        track.id === trackId
+          ? {
+              ...track,
+              clips: newClips.map((clip, i) => ({
+                ...clip,
+                id: generateId(),
+              })),
+            }
+          : track
+      ),
+    }));
+  },
+
   selectedClipId: null,
   setSelectedClipId: (id) => set({ selectedClipId: id }),
 

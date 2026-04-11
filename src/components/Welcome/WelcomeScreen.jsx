@@ -1,7 +1,6 @@
 import useEditorStore from '../../stores/editorStore';
 import {
   Upload,
-  Scissors,
   Mic,
   Volume2,
   Image,
@@ -13,13 +12,6 @@ export default function WelcomeScreen() {
   const { setActiveTab } = useEditorStore();
 
   const cards = [
-    {
-      icon: <Scissors size={24} />,
-      title: 'AI Auto-Cut',
-      desc: 'Remove silence with one click',
-      tab: 'autocut',
-      gradient: 'linear-gradient(135deg, #ef4444, #f59e0b)',
-    },
     {
       icon: <Upload size={24} />,
       title: 'Import & Edit',

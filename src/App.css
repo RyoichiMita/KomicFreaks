@@ -371,7 +371,7 @@
 
 /* --- Properties Panel --- */
 .properties-panel {
-  width: 340px;
+  width: 300px;
   background: var(--bg-deep);
   border-left: 1px solid var(--border-subtle);
   display: flex;
@@ -1466,66 +1466,60 @@
   padding: var(--space-lg);
 }
 
-.autocut-header {
+/* Timeline toolbar button */
+.btn-autocut {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.15));
+  color: #fbbf24;
+  font-size: 0.688rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-autocut:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(245, 158, 11, 0.25));
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Modal Layout */
+.autocut-modal {
+  max-width: 820px;
+  width: 90vw;
+}
+
+.autocut-modal-body {
+  display: flex;
+  gap: var(--space-xl);
+  min-height: 350px;
+}
+
+.autocut-modal-left {
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.autocut-modal-right {
+  flex: 1;
+  min-width: 0;
 }
 
 .autocut-header-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: linear-gradient(135deg, #ef4444, #f59e0b);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-}
-
-.autocut-title {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.autocut-subtitle {
-  font-size: 0.75rem;
-  color: var(--text-tertiary);
-  margin-top: 2px;
-}
-
-/* Drop Zone */
-.autocut-drop {
-  border: 2px dashed var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: var(--space-3xl) var(--space-xl);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  text-align: center;
-}
-
-.autocut-drop:hover {
-  border-color: var(--accent-primary);
-  background: rgba(124, 58, 237, 0.05);
-}
-
-.autocut-drop-title {
-  font-size: 0.938rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.autocut-drop-hint {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
 }
 
 /* File Info */
@@ -1585,15 +1579,15 @@
 .autocut-presets {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
 }
 
 .autocut-preset {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--bg-surface);
@@ -1616,26 +1610,26 @@
 }
 
 .autocut-preset-icon {
-  font-size: 1.25rem;
-  width: 36px;
-  height: 36px;
+  font-size: 1rem;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-deep);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
 
 .autocut-preset-name {
-  font-size: 0.813rem;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
 .autocut-preset-desc {
-  font-size: 0.688rem;
+  font-size: 0.625rem;
   color: var(--text-tertiary);
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 /* Advanced Settings */
@@ -1643,7 +1637,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-size: 0.75rem;
+  font-size: 0.688rem;
   color: var(--text-tertiary);
   background: none;
   border: none;
@@ -1661,13 +1655,13 @@
 .autocut-advanced {
   background: var(--bg-surface);
   border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
   animation: fadeIn var(--transition-base) ease;
 }
 
 .autocut-slider-group {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .autocut-slider-group:last-child {
@@ -1677,7 +1671,7 @@
 .autocut-slider-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.688rem;
   color: var(--text-secondary);
   margin-bottom: var(--space-xs);
 }
@@ -1711,7 +1705,7 @@
 .autocut-slider-hints {
   display: flex;
   justify-content: space-between;
-  font-size: 0.625rem;
+  font-size: 0.563rem;
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -1720,8 +1714,8 @@
 .autocut-analyze-btn {
   width: 100%;
   justify-content: center;
-  padding: var(--space-md) var(--space-xl);
-  font-size: 0.938rem;
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 0.813rem;
 }
 
 /* Progress Bar */
@@ -1746,12 +1740,12 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .autocut-stat {
   text-align: center;
-  padding: var(--space-md) var(--space-sm);
+  padding: var(--space-sm) var(--space-xs);
   background: var(--bg-surface);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
@@ -1764,7 +1758,7 @@
 
 .autocut-stat-value {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.938rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -1788,7 +1782,7 @@
 
 .autocut-waveform {
   width: 100%;
-  height: 60px;
+  height: 56px;
   background: var(--bg-surface);
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -1802,16 +1796,16 @@
 
 /* Segment List */
 .autocut-segments {
-  max-height: 200px;
+  max-height: 160px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .autocut-segments.expanded {
-  max-height: 400px;
+  max-height: 300px;
 }
 
 .autocut-segment {
@@ -1889,7 +1883,6 @@
   flex: 1;
   justify-content: center;
 }
-
 /* --- Responsive --- */
 @media (max-width: 1024px) {
   .properties-panel {

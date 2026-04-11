@@ -10,10 +10,10 @@ import {
   Trash2,
   Volume2,
   VolumeX,
-  GripVertical,
 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { formatDuration } from '../../utils/helpers';
+import AutoCutModal from '../AutoCut/AutoCutPanel';
 
 const trackIcons = {
   video: Film,
@@ -41,6 +41,7 @@ export default function Timeline() {
 
   const [dragState, setDragState] = useState(null);
   const [resizeState, setResizeState] = useState(null);
+  const [showAutoCut, setShowAutoCut] = useState(false);
   const timelineBodyRef = useRef(null);
 
   const hasClips = tracks.some((t) => t.clips.length > 0);
@@ -48,6 +49,10 @@ export default function Timeline() {
   const pixelsPerSecond = 40 * zoomLevel;
   const timelineWidth = Math.max(totalDuration * pixelsPerSecond + 200, 800);
   const trackLabelWidth = 120;
+
+  // Find the first video clip for Auto-Cut
+  const videoTrack = tracks.find((t) => t.id === 'video');
+  const firstVideoClip = videoTrack?.clips?.[0] || null;
 
   // --- Drag handlers ---
   const handleClipMouseDown = useCallback(
@@ -162,13 +167,18 @@ export default function Timeline() {
           </div>
           {hasClips && (
             <>
-              <button
-                className="btn-icon tooltip"
-                data-tooltip="Split clip (S)"
-                onClick={() => {}}
-              >
-                <Scissors size={14} />
-              </button>
+              {/* Auto-Cut Button */}
+              {firstVideoClip && (
+                <button
+                  className="btn-autocut tooltip"
+                  data-tooltip="AI Auto-Cut — remove silence"
+                  onClick={() => setShowAutoCut(true)}
+                >
+                  <Scissors size={13} />
+                  <span>Auto-Cut</span>
+                  <span className="badge badge-ai" style={{ fontSize: '0.563rem', padding: '1px 4px' }}>AI</span>
+                </button>
+              )}
               <button
                 className="btn-icon tooltip"
                 data-tooltip="Delete selected (Del)"
@@ -358,6 +368,14 @@ export default function Timeline() {
           </>
         )}
       </div>
+
+      {/* Auto-Cut Modal */}
+      {showAutoCut && firstVideoClip && (
+        <AutoCutModal
+          videoClip={firstVideoClip}
+          onClose={() => setShowAutoCut(false)}
+        />
+      )}
     </div>
   );
 }

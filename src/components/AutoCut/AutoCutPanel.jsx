@@ -1,24 +1,19 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import {
   Scissors,
-  Upload,
   Sparkles,
   Play,
   Pause,
-  Check,
   X,
-  Clock,
   Zap,
   ChevronDown,
   ChevronRight,
   RotateCcw,
-  Download,
   Eye,
   EyeOff,
   Settings,
 } from 'lucide-react';
-import { analyzeAudio, generateCutList } from '../../services/autocut';
-import { getFFmpeg, trimVideo } from '../../services/ffmpeg';
+import { analyzeAudio } from '../../services/autocut';
 import { formatDuration } from '../../utils/helpers';
 import useEditorStore from '../../stores/editorStore';
 
@@ -46,66 +41,55 @@ const PRESETS = [
   },
 ];
 
-export default function AutoCutPanel() {
-  const { addClipToTrack, setActiveTab } = useEditorStore();
+export default function AutoCutModal({ onClose, videoClip }) {
+  const { replaceTrackClips, showNotification } = useEditorStore();
 
-  const [file, setFile] = useState(null);
-  const [fileUrl, setFileUrl] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState('natural');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [customSettings, setCustomSettings] = useState(PRESETS[1].settings);
-  const [exporting, setExporting] = useState(false);
-  const [exportProgress, setExportProgress] = useState(0);
   const [playingSegment, setPlayingSegment] = useState(null);
   const [expandedView, setExpandedView] = useState(false);
 
-  const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const playTimeoutRef = useRef(null);
 
-  // Cleanup URLs on unmount
   useEffect(() => {
     return () => {
-      if (fileUrl) URL.revokeObjectURL(fileUrl);
       if (playTimeoutRef.current) clearTimeout(playTimeoutRef.current);
     };
-  }, [fileUrl]);
+  }, []);
 
-  const handleFileSelect = useCallback((e) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
+  // Auto-analyze on mount
+  useEffect(() => {
+    if (videoClip?.file || videoClip?.url) {
+      handleAnalyze();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (fileUrl) URL.revokeObjectURL(fileUrl);
-    const url = URL.createObjectURL(selected);
-    setFile(selected);
-    setFileUrl(url);
-    setResult(null);
-    e.target.value = '';
-  }, [fileUrl]);
+  const getFileForAnalysis = useCallback(async () => {
+    // If we have the original File object, use it
+    if (videoClip.file) return videoClip.file;
 
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    const dropped = e.dataTransfer.files?.[0];
-    if (!dropped || !dropped.type.startsWith('video/')) return;
+    // Otherwise fetch from blob URL
+    if (videoClip.url) {
+      const response = await fetch(videoClip.url);
+      const blob = await response.blob();
+      return new File([blob], videoClip.name || 'video.mp4', { type: 'video/mp4' });
+    }
 
-    if (fileUrl) URL.revokeObjectURL(fileUrl);
-    const url = URL.createObjectURL(dropped);
-    setFile(dropped);
-    setFileUrl(url);
-    setResult(null);
-  }, [fileUrl]);
+    throw new Error('No video file available');
+  }, [videoClip]);
 
   const handleAnalyze = useCallback(async () => {
-    if (!file) return;
-
     setAnalyzing(true);
     setProgress(0);
     setResult(null);
 
     try {
+      const file = await getFileForAnalysis();
       const preset = PRESETS.find((p) => p.id === selectedPreset);
       const settings = showAdvanced ? customSettings : preset?.settings || PRESETS[1].settings;
 
@@ -113,16 +97,11 @@ export default function AutoCutPanel() {
       setResult(analysisResult);
     } catch (err) {
       console.error('Analysis failed:', err);
-      alert('Failed to analyze audio. Make sure the video has an audio track.');
+      showNotification('Analysis failed — make sure the video has audio', 'error');
     } finally {
       setAnalyzing(false);
     }
-  }, [file, selectedPreset, showAdvanced, customSettings]);
-
-  const handleReanalyze = useCallback(() => {
-    setResult(null);
-    // Will trigger re-analysis when user clicks Analyze
-  }, []);
+  }, [getFileForAnalysis, selectedPreset, showAdvanced, customSettings, showNotification]);
 
   const toggleSegment = useCallback((segId) => {
     if (!result) return;
@@ -135,7 +114,7 @@ export default function AutoCutPanel() {
   }, [result]);
 
   const playSegment = useCallback((segment) => {
-    if (!videoRef.current || !fileUrl) return;
+    if (!videoRef.current || !videoClip?.url) return;
 
     if (playTimeoutRef.current) clearTimeout(playTimeoutRef.current);
 
@@ -148,83 +127,46 @@ export default function AutoCutPanel() {
       videoRef.current?.pause();
       setPlayingSegment(null);
     }, dur);
-  }, [fileUrl]);
+  }, [videoClip]);
 
-  const handleExportCut = useCallback(async () => {
-    if (!result || !file) return;
+  const handleApply = useCallback(() => {
+    if (!result) return;
 
     const keptSegments = result.segments.filter((s) => s.keep);
     if (keptSegments.length === 0) {
-      alert('No segments selected to keep!');
+      showNotification('No segments selected to keep!', 'error');
       return;
     }
 
-    setExporting(true);
-    setExportProgress(0);
+    // Build new clips from kept segments
+    let offset = 0;
+    const newClips = keptSegments.map((seg, i) => ({
+      name: `${videoClip.name || 'Clip'} #${i + 1}`,
+      type: 'video',
+      url: videoClip.url,
+      file: videoClip.file,
+      duration: seg.duration,
+      offset,
+      trimStart: seg.start,
+      trimEnd: seg.end,
+    }));
 
-    try {
-      const ffmpeg = await getFFmpeg();
-      setExportProgress(10);
-
-      // Write input file
-      const fileData = new Uint8Array(await file.arrayBuffer());
-      await ffmpeg.writeFile('input.mp4', fileData);
-      setExportProgress(25);
-
-      // Build and run the FFmpeg filter_complex
-      const { filterComplex, outputMaps } = generateCutList(keptSegments);
-
-      await ffmpeg.exec([
-        '-i', 'input.mp4',
-        '-filter_complex', filterComplex,
-        ...outputMaps,
-        '-c:v', 'libx264',
-        '-preset', 'fast',
-        '-crf', '18',
-        '-c:a', 'aac',
-        '-b:a', '192k',
-        '-movflags', '+faststart',
-        'output.mp4',
-      ]);
-
-      setExportProgress(85);
-
-      const data = await ffmpeg.readFile('output.mp4');
-      const blob = new Blob([data], { type: 'video/mp4' });
-      const url = URL.createObjectURL(blob);
-
-      setExportProgress(95);
-
-      // Download the file
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${file.name.replace(/\.[^.]+$/, '')}_autocut.mp4`;
-      a.click();
-
-      // Also add to timeline
-      addClipToTrack('video', {
-        name: `${file.name.replace(/\.[^.]+$/, '')} (Auto-Cut)`,
-        type: 'video',
-        url,
-        duration: result.stats.outputDuration,
-        offset: 0,
-      });
-
-      setExportProgress(100);
-      setActiveTab('editor');
-
-      // Cleanup FFmpeg files
-      await ffmpeg.deleteFile('input.mp4');
-      await ffmpeg.deleteFile('output.mp4');
-    } catch (err) {
-      console.error('Export failed:', err);
-      alert(`Export failed: ${err.message}`);
-    } finally {
-      setExporting(false);
+    // Calculate running offset
+    let runningOffset = 0;
+    for (const clip of newClips) {
+      clip.offset = runningOffset;
+      runningOffset += clip.duration;
     }
-  }, [result, file, addClipToTrack, setActiveTab]);
 
-  // Calculate live stats based on toggled segments
+    replaceTrackClips('video', newClips);
+    showNotification(
+      `Auto-cut complete: ${keptSegments.length} segments, saved ${formatDuration(liveStats.timeSaved)}`,
+      'success'
+    );
+    onClose();
+  }, [result, videoClip, replaceTrackClips, showNotification, onClose]);
+
+  // Calculate live stats
   const liveStats = result
     ? (() => {
         const kept = result.segments.filter((s) => s.keep);
@@ -239,379 +181,319 @@ export default function AutoCutPanel() {
     : null;
 
   return (
-    <div className="autocut-panel">
-      {/* Header */}
-      <div className="autocut-header">
-        <div className="autocut-header-icon">
-          <Scissors size={20} />
-        </div>
-        <div>
-          <div className="autocut-title">AI Auto-Cut</div>
-          <div className="autocut-subtitle">
-            Remove silence and dead air automatically
-          </div>
-        </div>
-      </div>
-
-      {/* File Upload */}
-      {!file ? (
-        <div
-          className="autocut-drop"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload size={28} style={{ color: 'var(--accent-primary-light)' }} />
-          <div className="autocut-drop-title">Drop your video here</div>
-          <div className="autocut-drop-hint">or click to browse • MP4, MOV, WebM</div>
-        </div>
-      ) : !result ? (
-        /* Pre-analysis: show file info + preset selector */
-        <div className="autocut-setup">
-          {/* File info */}
-          <div className="autocut-file-info">
-            <div className="autocut-file-thumb">
-              <video src={fileUrl} ref={videoRef} muted />
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal-content autocut-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="modal-header">
+          <h2 className="modal-title">
+            <div className="autocut-header-icon" style={{ width: '32px', height: '32px' }}>
+              <Scissors size={16} />
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="autocut-file-name">{file.name}</div>
-              <div className="autocut-file-meta">
-                {(file.size / (1024 * 1024)).toFixed(1)} MB
-              </div>
-            </div>
-            <button
-              className="btn-icon"
-              onClick={() => {
-                if (fileUrl) URL.revokeObjectURL(fileUrl);
-                setFile(null);
-                setFileUrl(null);
-              }}
-              title="Remove"
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          {/* Preset Selector */}
-          <div className="autocut-section-title">Cut Style</div>
-          <div className="autocut-presets">
-            {PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                className={`autocut-preset ${selectedPreset === preset.id ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedPreset(preset.id);
-                  setCustomSettings(preset.settings);
-                }}
-              >
-                <span className="autocut-preset-icon">{preset.icon}</span>
-                <div>
-                  <div className="autocut-preset-name">{preset.name}</div>
-                  <div className="autocut-preset-desc">{preset.desc}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Advanced Settings */}
-          <button
-            className="autocut-advanced-toggle"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-          >
-            <Settings size={12} />
-            Advanced Settings
-            {showAdvanced ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            AI Auto-Cut
+          </h2>
+          <button className="btn-icon" onClick={onClose}>
+            <X size={18} />
           </button>
-
-          {showAdvanced && (
-            <div className="autocut-advanced">
-              <div className="autocut-slider-group">
-                <label className="autocut-slider-label">
-                  Silence Threshold
-                  <span>{(customSettings.silenceThreshold * 100).toFixed(1)}%</span>
-                </label>
-                <input
-                  type="range"
-                  min="0.005"
-                  max="0.05"
-                  step="0.001"
-                  value={customSettings.silenceThreshold}
-                  onChange={(e) =>
-                    setCustomSettings((s) => ({
-                      ...s,
-                      silenceThreshold: parseFloat(e.target.value),
-                    }))
-                  }
-                  className="autocut-slider"
-                />
-                <div className="autocut-slider-hints">
-                  <span>Aggressive</span>
-                  <span>Gentle</span>
-                </div>
-              </div>
-
-              <div className="autocut-slider-group">
-                <label className="autocut-slider-label">
-                  Min Silence Duration
-                  <span>{customSettings.minSilenceDuration.toFixed(2)}s</span>
-                </label>
-                <input
-                  type="range"
-                  min="0.15"
-                  max="2.0"
-                  step="0.05"
-                  value={customSettings.minSilenceDuration}
-                  onChange={(e) =>
-                    setCustomSettings((s) => ({
-                      ...s,
-                      minSilenceDuration: parseFloat(e.target.value),
-                    }))
-                  }
-                  className="autocut-slider"
-                />
-                <div className="autocut-slider-hints">
-                  <span>Cut all pauses</span>
-                  <span>Only long gaps</span>
-                </div>
-              </div>
-
-              <div className="autocut-slider-group">
-                <label className="autocut-slider-label">
-                  Padding
-                  <span>{(customSettings.padding * 1000).toFixed(0)}ms</span>
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="0.2"
-                  step="0.01"
-                  value={customSettings.padding}
-                  onChange={(e) =>
-                    setCustomSettings((s) => ({
-                      ...s,
-                      padding: parseFloat(e.target.value),
-                    }))
-                  }
-                  className="autocut-slider"
-                />
-                <div className="autocut-slider-hints">
-                  <span>Tight</span>
-                  <span>Breathing room</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Analyze Button */}
-          <button
-            className="btn btn-primary autocut-analyze-btn"
-            onClick={handleAnalyze}
-            disabled={analyzing}
-          >
-            {analyzing ? (
-              <>
-                <div className="spinner" />
-                Analyzing... {progress}%
-              </>
-            ) : (
-              <>
-                <Sparkles size={16} />
-                Detect Silence & Auto-Cut
-              </>
-            )}
-          </button>
-
-          {/* Progress */}
-          {analyzing && (
-            <div className="autocut-progress">
-              <div className="autocut-progress-bar" style={{ width: `${progress}%` }} />
-            </div>
-          )}
         </div>
-      ) : (
-        /* Results view */
-        <div className="autocut-results">
-          {/* Stats Cards */}
-          <div className="autocut-stats">
-            <div className="autocut-stat">
-              <div className="autocut-stat-value">{liveStats.segmentCount}</div>
-              <div className="autocut-stat-label">Segments</div>
-            </div>
-            <div className="autocut-stat accent">
-              <div className="autocut-stat-value">-{formatDuration(liveStats.timeSaved)}</div>
-              <div className="autocut-stat-label">Time Saved</div>
-            </div>
-            <div className="autocut-stat">
-              <div className="autocut-stat-value">{formatDuration(liveStats.outputDuration)}</div>
-              <div className="autocut-stat-label">Final Length</div>
-            </div>
-            <div className="autocut-stat">
-              <div className="autocut-stat-value">{liveStats.compressionRatio}%</div>
-              <div className="autocut-stat-label">Kept</div>
-            </div>
-          </div>
 
-          {/* Waveform Visualization */}
-          <div className="autocut-waveform-container">
-            <div className="autocut-section-title" style={{ marginBottom: '8px' }}>
-              Audio Waveform
-              <span style={{ float: 'right', fontSize: '0.625rem', color: 'var(--text-muted)' }}>
-                🟣 Keep • 🔴 Remove
-              </span>
+        <div className="modal-body autocut-modal-body">
+          {/* Left: Settings + Controls */}
+          <div className="autocut-modal-left">
+            {/* File info */}
+            <div className="autocut-file-info">
+              <div className="autocut-file-thumb">
+                <video src={videoClip?.url} ref={videoRef} muted />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="autocut-file-name">{videoClip?.name || 'Video'}</div>
+                <div className="autocut-file-meta">
+                  {formatDuration(videoClip?.duration || 0)} •{' '}
+                  {videoClip?.file ? `${(videoClip.file.size / (1024 * 1024)).toFixed(1)} MB` : 'On timeline'}
+                </div>
+              </div>
             </div>
-            <div className="autocut-waveform">
-              <svg
-                viewBox={`0 0 ${result.waveform.length} 100`}
-                preserveAspectRatio="none"
-                className="autocut-waveform-svg"
-              >
-                {/* Silent regions (red) */}
-                {result.silenceRegions.map((region, i) => {
-                  const x1 = (region.start / result.duration) * result.waveform.length;
-                  const x2 = (region.end / result.duration) * result.waveform.length;
-                  return (
-                    <rect
-                      key={`silence-${i}`}
-                      x={x1}
-                      y={0}
-                      width={x2 - x1}
-                      height={100}
-                      fill="rgba(239, 68, 68, 0.15)"
-                    />
-                  );
-                })}
 
-                {/* Waveform bars */}
-                {result.waveform.map((point, i) => {
-                  const time = (i / result.waveform.length) * result.duration;
-                  const inSilence = result.silenceRegions.some(
-                    (r) => time >= r.start && time <= r.end
-                  );
-                  const height = Math.max(point.amplitude * 80, 1);
-                  return (
-                    <rect
-                      key={i}
-                      x={i}
-                      y={50 - height / 2}
-                      width={0.8}
-                      height={height}
-                      fill={inSilence ? 'rgba(239, 68, 68, 0.5)' : 'rgba(124, 58, 237, 0.8)'}
-                    />
-                  );
-                })}
-              </svg>
-            </div>
-          </div>
-
-          {/* Hidden video for preview */}
-          <video
-            ref={videoRef}
-            src={fileUrl}
-            style={{ display: 'none' }}
-          />
-
-          {/* Segment List */}
-          <div className="autocut-section-title" style={{ marginTop: 'var(--space-lg)' }}>
-            <span>
-              Segments ({result.segments.filter((s) => s.keep).length}/{result.segments.length})
-            </span>
-            <button
-              className="btn-icon"
-              style={{ width: '24px', height: '24px', marginLeft: 'auto' }}
-              onClick={() => setExpandedView(!expandedView)}
-              title={expandedView ? 'Collapse' : 'Expand'}
-            >
-              {expandedView ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-            </button>
-          </div>
-
-          <div className={`autocut-segments ${expandedView ? 'expanded' : ''}`}>
-            {result.segments.map((seg, i) => (
-              <div
-                key={seg.id}
-                className={`autocut-segment ${seg.keep ? 'keep' : 'remove'} ${
-                  playingSegment === seg.id ? 'playing' : ''
-                }`}
-              >
+            {/* Preset Selector */}
+            <div className="autocut-section-title">Cut Style</div>
+            <div className="autocut-presets">
+              {PRESETS.map((preset) => (
                 <button
-                  className="autocut-segment-toggle"
-                  onClick={() => toggleSegment(seg.id)}
-                  title={seg.keep ? 'Click to remove' : 'Click to keep'}
+                  key={preset.id}
+                  className={`autocut-preset ${selectedPreset === preset.id ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedPreset(preset.id);
+                    setCustomSettings(preset.settings);
+                  }}
                 >
-                  {seg.keep ? (
-                    <Eye size={12} style={{ color: 'var(--accent-success)' }} />
-                  ) : (
-                    <EyeOff size={12} style={{ color: 'var(--accent-danger)' }} />
-                  )}
+                  <span className="autocut-preset-icon">{preset.icon}</span>
+                  <div>
+                    <div className="autocut-preset-name">{preset.name}</div>
+                    <div className="autocut-preset-desc">{preset.desc}</div>
+                  </div>
                 </button>
+              ))}
+            </div>
 
-                <span className="autocut-segment-num">#{i + 1}</span>
+            {/* Advanced Settings */}
+            <button
+              className="autocut-advanced-toggle"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+            >
+              <Settings size={12} />
+              Advanced
+              {showAdvanced ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            </button>
 
-                <span className="autocut-segment-time">
-                  {formatDuration(seg.start)} — {formatDuration(seg.end)}
+            {showAdvanced && (
+              <div className="autocut-advanced">
+                <div className="autocut-slider-group">
+                  <label className="autocut-slider-label">
+                    Silence Threshold
+                    <span>{(customSettings.silenceThreshold * 100).toFixed(1)}%</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0.005"
+                    max="0.05"
+                    step="0.001"
+                    value={customSettings.silenceThreshold}
+                    onChange={(e) =>
+                      setCustomSettings((s) => ({
+                        ...s,
+                        silenceThreshold: parseFloat(e.target.value),
+                      }))
+                    }
+                    className="autocut-slider"
+                  />
+                  <div className="autocut-slider-hints">
+                    <span>Aggressive</span>
+                    <span>Gentle</span>
+                  </div>
+                </div>
+
+                <div className="autocut-slider-group">
+                  <label className="autocut-slider-label">
+                    Min Silence
+                    <span>{customSettings.minSilenceDuration.toFixed(2)}s</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0.15"
+                    max="2.0"
+                    step="0.05"
+                    value={customSettings.minSilenceDuration}
+                    onChange={(e) =>
+                      setCustomSettings((s) => ({
+                        ...s,
+                        minSilenceDuration: parseFloat(e.target.value),
+                      }))
+                    }
+                    className="autocut-slider"
+                  />
+                  <div className="autocut-slider-hints">
+                    <span>Cut all pauses</span>
+                    <span>Only long gaps</span>
+                  </div>
+                </div>
+
+                <div className="autocut-slider-group">
+                  <label className="autocut-slider-label">
+                    Padding
+                    <span>{(customSettings.padding * 1000).toFixed(0)}ms</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="0.2"
+                    step="0.01"
+                    value={customSettings.padding}
+                    onChange={(e) =>
+                      setCustomSettings((s) => ({
+                        ...s,
+                        padding: parseFloat(e.target.value),
+                      }))
+                    }
+                    className="autocut-slider"
+                  />
+                  <div className="autocut-slider-hints">
+                    <span>Tight</span>
+                    <span>Breathing room</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Analyze / Re-analyze */}
+            {!result && (
+              <button
+                className="btn btn-primary autocut-analyze-btn"
+                onClick={handleAnalyze}
+                disabled={analyzing}
+              >
+                {analyzing ? (
+                  <>
+                    <div className="spinner" />
+                    Analyzing... {progress}%
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={16} />
+                    Detect Silence
+                  </>
+                )}
+              </button>
+            )}
+
+            {analyzing && (
+              <div className="autocut-progress">
+                <div className="autocut-progress-bar" style={{ width: `${progress}%` }} />
+              </div>
+            )}
+          </div>
+
+          {/* Right: Results */}
+          {result && (
+            <div className="autocut-modal-right">
+              {/* Stats */}
+              <div className="autocut-stats">
+                <div className="autocut-stat">
+                  <div className="autocut-stat-value">{liveStats.segmentCount}</div>
+                  <div className="autocut-stat-label">Segments</div>
+                </div>
+                <div className="autocut-stat accent">
+                  <div className="autocut-stat-value">-{formatDuration(liveStats.timeSaved)}</div>
+                  <div className="autocut-stat-label">Time Saved</div>
+                </div>
+                <div className="autocut-stat">
+                  <div className="autocut-stat-value">{formatDuration(liveStats.outputDuration)}</div>
+                  <div className="autocut-stat-label">Final</div>
+                </div>
+                <div className="autocut-stat">
+                  <div className="autocut-stat-value">{liveStats.compressionRatio}%</div>
+                  <div className="autocut-stat-label">Kept</div>
+                </div>
+              </div>
+
+              {/* Waveform */}
+              <div className="autocut-waveform-container">
+                <div className="autocut-section-title" style={{ marginBottom: '6px' }}>
+                  Audio Waveform
+                  <span style={{ marginLeft: 'auto', fontSize: '0.563rem', color: 'var(--text-muted)' }}>
+                    🟣 Keep &bull; 🔴 Cut
+                  </span>
+                </div>
+                <div className="autocut-waveform">
+                  <svg
+                    viewBox={`0 0 ${result.waveform.length} 100`}
+                    preserveAspectRatio="none"
+                    className="autocut-waveform-svg"
+                  >
+                    {result.silenceRegions.map((region, i) => {
+                      const x1 = (region.start / result.duration) * result.waveform.length;
+                      const x2 = (region.end / result.duration) * result.waveform.length;
+                      return (
+                        <rect
+                          key={`silence-${i}`}
+                          x={x1}
+                          y={0}
+                          width={x2 - x1}
+                          height={100}
+                          fill="rgba(239, 68, 68, 0.15)"
+                        />
+                      );
+                    })}
+                    {result.waveform.map((point, i) => {
+                      const time = (i / result.waveform.length) * result.duration;
+                      const inSilence = result.silenceRegions.some(
+                        (r) => time >= r.start && time <= r.end
+                      );
+                      const height = Math.max(point.amplitude * 80, 1);
+                      return (
+                        <rect
+                          key={i}
+                          x={i}
+                          y={50 - height / 2}
+                          width={0.8}
+                          height={height}
+                          fill={inSilence ? 'rgba(239, 68, 68, 0.5)' : 'rgba(124, 58, 237, 0.8)'}
+                        />
+                      );
+                    })}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Segments */}
+              <div className="autocut-section-title">
+                <span>
+                  Segments ({result.segments.filter((s) => s.keep).length}/{result.segments.length})
                 </span>
-
-                <span className="autocut-segment-dur">
-                  {seg.duration.toFixed(1)}s
-                </span>
-
                 <button
                   className="btn-icon"
-                  style={{ width: '22px', height: '22px' }}
-                  onClick={() => playSegment(seg)}
-                  title="Preview segment"
+                  style={{ width: '22px', height: '22px', marginLeft: 'auto' }}
+                  onClick={() => setExpandedView(!expandedView)}
                 >
-                  {playingSegment === seg.id ? (
-                    <Pause size={10} />
-                  ) : (
-                    <Play size={10} />
-                  )}
+                  {expandedView ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                 </button>
               </div>
-            ))}
-          </div>
 
-          {/* Action Buttons */}
-          <div className="autocut-actions">
-            <button className="btn btn-secondary" onClick={handleReanalyze}>
-              <RotateCcw size={14} />
-              Re-analyze
-            </button>
+              <div className={`autocut-segments ${expandedView ? 'expanded' : ''}`}>
+                {result.segments.map((seg, i) => (
+                  <div
+                    key={seg.id}
+                    className={`autocut-segment ${seg.keep ? 'keep' : 'remove'} ${
+                      playingSegment === seg.id ? 'playing' : ''
+                    }`}
+                  >
+                    <button
+                      className="autocut-segment-toggle"
+                      onClick={() => toggleSegment(seg.id)}
+                      title={seg.keep ? 'Click to remove' : 'Click to keep'}
+                    >
+                      {seg.keep ? (
+                        <Eye size={12} style={{ color: 'var(--accent-success)' }} />
+                      ) : (
+                        <EyeOff size={12} style={{ color: 'var(--accent-danger)' }} />
+                      )}
+                    </button>
+                    <span className="autocut-segment-num">#{i + 1}</span>
+                    <span className="autocut-segment-time">
+                      {formatDuration(seg.start)} — {formatDuration(seg.end)}
+                    </span>
+                    <span className="autocut-segment-dur">{seg.duration.toFixed(1)}s</span>
+                    <button
+                      className="btn-icon"
+                      style={{ width: '22px', height: '22px' }}
+                      onClick={() => playSegment(seg)}
+                    >
+                      {playingSegment === seg.id ? <Pause size={10} /> : <Play size={10} />}
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-            <button
-              className="btn btn-primary"
-              onClick={handleExportCut}
-              disabled={exporting || liveStats.segmentCount === 0}
-            >
-              {exporting ? (
-                <>
-                  <div className="spinner" />
-                  Cutting... {exportProgress}%
-                </>
-              ) : (
-                <>
+              {/* Actions */}
+              <div className="autocut-actions">
+                <button className="btn btn-secondary" onClick={handleAnalyze}>
+                  <RotateCcw size={14} />
+                  Re-analyze
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleApply}
+                  disabled={liveStats.segmentCount === 0}
+                >
                   <Zap size={14} />
-                  Auto-Cut & Export
-                </>
-              )}
-            </button>
-          </div>
-
-          {exporting && (
-            <div className="autocut-progress">
-              <div className="autocut-progress-bar" style={{ width: `${exportProgress}%` }} />
+                  Apply Cuts to Timeline
+                </button>
+              </div>
             </div>
           )}
         </div>
-      )}
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="video/*"
-        style={{ display: 'none' }}
-        onChange={handleFileSelect}
-      />
+      </div>
     </div>
   );
 }
