@@ -41,13 +41,13 @@ export function isDirectMediaUrl(url) {
  * Extract audio from a YouTube URL via the worker.
  * Returns a Blob of the audio data.
  */
-export async function extractYouTubeAudio(url, onStatus) {
-  onStatus?.('Connecting to audio proxy...');
+export async function extractYouTubeAudio(url, onStatus, isolateVocals = false) {
+  onStatus?.(isolateVocals ? 'Extracting & isolating vocals...' : 'Connecting to audio proxy...');
 
   const response = await fetch(`${WORKER_URL}/extract`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ url, isolateVocals }),
   });
 
   if (!response.ok) {
@@ -55,7 +55,7 @@ export async function extractYouTubeAudio(url, onStatus) {
     throw new Error(err.error || `Proxy returned ${response.status}`);
   }
 
-  onStatus?.('Downloading audio...');
+  onStatus?.(isolateVocals ? 'Processing vocals...' : 'Downloading audio...');
 
   const blob = await response.blob();
   if (blob.size === 0) {
@@ -69,28 +69,30 @@ export async function extractYouTubeAudio(url, onStatus) {
  * Proxy-download audio from a direct URL via the worker.
  * Returns a Blob.
  */
-export async function proxyDownload(url, onStatus) {
+export async function proxyDownload(url, onStatus, isolateVocals = false) {
   onStatus?.('Fetching via proxy...');
 
-  // First try direct fetch (works if CORS allows it)
-  try {
-    const directResponse = await fetch(url, { mode: 'cors' });
-    if (directResponse.ok) {
-      onStatus?.('Downloading...');
-      const blob = await directResponse.blob();
-      if (blob.size > 0) return blob;
+  // First try direct fetch (works if CORS allows it, only if not isolating vocals)
+  if (!isolateVocals) {
+    try {
+      const directResponse = await fetch(url, { mode: 'cors' });
+      if (directResponse.ok) {
+        onStatus?.('Downloading...');
+        const blob = await directResponse.blob();
+        if (blob.size > 0) return blob;
+      }
+    } catch {
+      // CORS blocked — fall through to worker proxy
     }
-  } catch {
-    // CORS blocked — fall through to worker proxy
   }
 
   // Use worker proxy
-  onStatus?.('Using proxy...');
+  onStatus?.(isolateVocals ? 'Extracting vocals via proxy...' : 'Using proxy...');
 
   const response = await fetch(`${WORKER_URL}/proxy`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ url, isolateVocals }),
   });
 
   if (!response.ok) {
@@ -112,24 +114,27 @@ export async function proxyDownload(url, onStatus) {
  * Fetch audio from any URL (auto-detects YouTube vs direct).
  * Returns { blob, type }.
  */
-export async function fetchAudioFromUrl(url, onStatus) {
+export async function fetchAudioFromUrl(url, onStatus, isolateVocals = false) {
   if (isYouTubeUrl(url)) {
-    const blob = await extractYouTubeAudio(url, onStatus);
+    const blob = await extractYouTubeAudio(url, onStatus, isolateVocals);
     return { blob, type: 'youtube' };
   }
 
-  const blob = await proxyDownload(url, onStatus);
+  const blob = await proxyDownload(url, onStatus, isolateVocals);
   return { blob, type: 'direct' };
 }
 
 /**
  * Check if the worker proxy is available.
+ * Returns { online, demucs }
  */
 export async function checkProxyHealth() {
   try {
     const response = await fetch(`${WORKER_URL}/health`, { signal: AbortSignal.timeout(5000) });
-    return response.ok;
+    if (!response.ok) return { online: false, demucs: false };
+    const data = await response.json();
+    return { online: true, demucs: !!data.demucs };
   } catch {
-    return false;
+    return { online: false, demucs: false };
   }
 }
