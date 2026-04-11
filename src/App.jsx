@@ -14,6 +14,7 @@ import {
   Save,
   Type,
   MessageSquareText,
+  Clapperboard,
 } from 'lucide-react';
 import './App.css';
 
@@ -30,11 +31,13 @@ import WelcomeScreen from './components/Welcome/WelcomeScreen';
 import ExportModal from './components/Export/ExportModal';
 import CaptionsPanel from './components/Captions/CaptionsPanel';
 import AutoCaptionsPanel from './components/AutoCaptions/AutoCaptionsPanel';
+import AnimeClipsPanel from './components/AnimeClips/AnimeClipsPanel';
 
 // Tools available in the right tool strip inside the editor
 const TOOLS = [
   { id: 'narration', label: 'AI Narration', icon: Mic, badge: 'AI', title: '🗣️ AI Narration' },
   { id: 'sounds', label: 'Sounds', icon: Volume2, title: '🎭 Sound Effects' },
+  { id: 'animeclips', label: 'Anime Clips', icon: Clapperboard, badge: '🎬', title: '🎬 Anime Clip Extractor' },
   { id: 'captions', label: 'Captions', icon: Type, title: '📝 Captions & Text' },
   { id: 'autocaptions', label: 'Auto Captions', icon: MessageSquareText, badge: 'AI', title: '🗣️ Auto Captions' },
   { id: 'thumbnail', label: 'Thumbnails', icon: Image, title: '🖼️ Thumbnails' },
@@ -108,6 +111,8 @@ function App() {
         return <CaptionsPanel />;
       case 'autocaptions':
         return <AutoCaptionsPanel />;
+      case 'animeclips':
+        return <AnimeClipsPanel />;
       case 'thumbnail':
         return <ThumbnailPanel />;
       case 'templates':

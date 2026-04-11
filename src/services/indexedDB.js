@@ -9,8 +9,9 @@
  */
 
 const DB_NAME = 'komic-freaks-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const MEDIA_STORE = 'media-blobs';
+const CLIPS_STORE = 'anime-clips';
 
 let dbInstance = null;
 
@@ -27,6 +28,11 @@ function openDB() {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(MEDIA_STORE)) {
         db.createObjectStore(MEDIA_STORE, { keyPath: 'id' });
+      }
+      if (!db.objectStoreNames.contains(CLIPS_STORE)) {
+        const store = db.createObjectStore(CLIPS_STORE, { keyPath: 'id' });
+        store.createIndex('character', 'character', { unique: false });
+        store.createIndex('series', 'series', { unique: false });
       }
     };
 
