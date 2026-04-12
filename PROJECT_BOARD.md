@@ -46,11 +46,12 @@
 - [x] Anime Clip Extractor — waveform scrubber with IN/OUT point selection
 - [x] Anime Clip Extractor — clip library with tag/character/series metadata
 - [x] AI Vocal Isolation — Demucs integration (clip-first architecture)
-- [x] AI Vocal Isolation — torchcodec dependency fix
 - [x] Cloud AI Captions — OpenAI Whisper API (no local server needed)
 - [x] Cloud AI Captions — auto-detect 90+ languages (Japanese, Korean, etc.)
 - [x] Cloud AI Captions — Original / English / Both translation modes
 - [x] Cloud AI Captions — track source selector (Video, Audio, Narration, SFX)
+- [x] Audio Ducking — auto-lower music during narration (adjustable 5%-50%)
+- [x] Custom SFX Upload — upload WAV/MP3 with preview + add to timeline
 
 ---
 
@@ -63,8 +64,6 @@
 ## 📝 To Do
 
 ### Phase 7: Advanced Polish
-- [ ] Audio ducking (auto-lower music during narration)
-- [ ] Custom SFX upload
 - [ ] Performance optimization (Web Worker for FFmpeg)
 
 ### Phase 8: Ship
