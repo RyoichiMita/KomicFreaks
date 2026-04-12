@@ -33,6 +33,7 @@ export default function AutoCaptionsPanel() {
   const [transcribeStatus, setTranscribeStatus] = useState('');
   const [detectedLang, setDetectedLang] = useState(null);
   const [captionMode, setCaptionMode] = useState('both'); // 'original' | 'english' | 'both'
+  const [selectedTrack, setSelectedTrack] = useState('video'); // which track to caption
 
   // --- Shared results ---
   const [transcripts, setTranscripts] = useState([]);
@@ -45,22 +46,44 @@ export default function AutoCaptionsPanel() {
   const recognitionRef = useRef(null);
   const startTimeRef = useRef(0);
 
-  // Get audio from video on timeline or media library
-  const getVideoAudioBlob = async () => {
-    const videoTrack = tracks.find((t) => t.type === 'video');
-    if (videoTrack?.clips.length > 0) {
-      const clip = videoTrack.clips[0];
-      if (clip.url) {
-        const response = await fetch(clip.url);
-        return await response.blob();
+  // Track metadata for display
+  const TRACK_META = {
+    video:     { icon: '🎬', label: 'Video' },
+    audio:     { icon: '🎵', label: 'Audio' },
+    narration: { icon: '🎙️', label: 'AI Narration' },
+    sfx:       { icon: '💥', label: 'Sound FX' },
+  };
+
+  // Get available tracks (non-empty, excluding captions)
+  const availableTracks = tracks.filter(
+    (t) => t.id !== 'captions' && t.clips.length > 0
+  );
+
+  // Get audio blob from the selected track's clips
+  const getTrackAudioBlob = async () => {
+    const track = tracks.find((t) => t.id === selectedTrack);
+
+    if (track?.clips.length > 0) {
+      // Try to get audio from the first clip with a URL
+      for (const clip of track.clips) {
+        if (clip.url) {
+          try {
+            const response = await fetch(clip.url);
+            return await response.blob();
+          } catch { /* skip broken URLs */ }
+        }
+        // If the clip has a blob/file property
+        if (clip.blob) return clip.blob;
+        if (clip.file) return clip.file;
       }
     }
 
-    const videoFile = mediaFiles.find((f) =>
-      f.type?.startsWith('video/') || f.type?.startsWith('audio/')
-    );
-    if (videoFile?.url) {
-      const response = await fetch(videoFile.url);
+    // Fallback: check media library for matching type
+    const typeMap = { video: 'video/', audio: 'audio/', narration: 'audio/', sfx: 'audio/' };
+    const prefix = typeMap[selectedTrack] || 'audio/';
+    const mediaFile = mediaFiles.find((f) => f.type?.startsWith(prefix));
+    if (mediaFile?.url) {
+      const response = await fetch(mediaFile.url);
       return await response.blob();
     }
 
@@ -70,15 +93,16 @@ export default function AutoCaptionsPanel() {
   // --- AI Transcription (OpenAI Whisper Cloud API) ---
   const handleAITranscribe = async () => {
     setIsTranscribing(true);
-    setTranscribeStatus('Finding video audio...');
+    const trackLabel = TRACK_META[selectedTrack]?.label || selectedTrack;
+    setTranscribeStatus(`Loading ${trackLabel} audio...`);
     setTranscripts([]);
     setTranslations([]);
     setDetectedLang(null);
 
     try {
-      const audioBlob = await getVideoAudioBlob();
+      const audioBlob = await getTrackAudioBlob();
       if (!audioBlob) {
-        showNotification('No video or audio found. Import a video first.', 'error');
+        showNotification(`No audio found on ${trackLabel} track. Add clips first.`, 'error');
         setIsTranscribing(false);
         setTranscribeStatus('');
         return;
@@ -367,7 +391,55 @@ export default function AutoCaptionsPanel() {
               </span>
             </div>
 
-            {/* Caption mode */}
+            {/* Audio Source Selector */}
+            <div className="property-group" style={{ marginBottom: 'var(--space-sm)' }}>
+              <div className="property-group-title">Audio Source</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {tracks.filter((t) => t.id !== 'captions').map((track) => {
+                  const meta = TRACK_META[track.id] || { icon: '🎧', label: track.label };
+                  const clipCount = track.clips.length;
+                  const isSelected = selectedTrack === track.id;
+                  const isEmpty = clipCount === 0;
+
+                  return (
+                    <button
+                      key={track.id}
+                      className={`btn ${isSelected ? 'btn-primary' : ''}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '7px 10px',
+                        fontSize: '0.688rem',
+                        opacity: isEmpty ? 0.4 : 1,
+                        cursor: isEmpty ? 'not-allowed' : 'pointer',
+                        justifyContent: 'flex-start',
+                      }}
+                      onClick={() => !isEmpty && setSelectedTrack(track.id)}
+                      disabled={isEmpty}
+                    >
+                      <span style={{ fontSize: '1rem' }}>{meta.icon}</span>
+                      <span style={{ flex: 1, textAlign: 'left' }}>{meta.label}</span>
+                      <span style={{
+                        fontSize: '0.563rem',
+                        padding: '1px 6px',
+                        borderRadius: '8px',
+                        background: isEmpty
+                          ? 'rgba(255,255,255,0.05)'
+                          : isSelected
+                            ? 'rgba(255,255,255,0.2)'
+                            : 'rgba(139, 92, 246, 0.15)',
+                        color: isEmpty ? 'var(--text-muted)' : isSelected ? 'white' : 'var(--accent-primary-light)',
+                      }}>
+                        {clipCount === 0 ? 'empty' : `${clipCount} clip${clipCount > 1 ? 's' : ''}`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Caption Language */}
             <div className="property-group" style={{ marginBottom: 'var(--space-sm)' }}>
               <div className="property-group-title">Caption Language</div>
               <div style={{ display: 'flex', gap: '4px' }}>
