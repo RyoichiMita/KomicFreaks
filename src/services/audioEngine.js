@@ -2,9 +2,9 @@
  * AudioEngine — manages playback of all non-video audio tracks
  * (music, narration, SFX) in sync with the video timeline.
  *
- * Each audio clip gets an HTMLAudioElement that is started/stopped/seeked
- * in sync with the video playback. Track volume and mute states from the
- * store are applied in real-time.
+ * Features:
+ * - Per-track volume + mute
+ * - Audio Ducking: auto-lowers music/audio/sfx when narration is playing
  */
 
 class AudioEngine {
@@ -17,7 +17,6 @@ class AudioEngine {
 
   /**
    * Ensure an Audio element exists for a clip.
-   * Reuses existing elements if the URL hasn't changed.
    */
   _getOrCreateAudio(clip) {
     const existing = this.audioElements.get(clip.id);
@@ -25,7 +24,6 @@ class AudioEngine {
       return existing;
     }
 
-    // Cleanup old element if URL changed
     if (existing) {
       existing.pause();
       existing.src = '';
@@ -43,15 +41,44 @@ class AudioEngine {
   }
 
   /**
-   * Sync all audio tracks to the current timeline position.
-   * Called once when playback starts and on seek.
+   * Check if narration is playing at a given time.
    */
-  syncToTime(tracks, currentTime) {
-    // Get all audio-type tracks (audio, narration, sfx)
-    const audioTracks = tracks.filter((t) => t.type !== 'video');
+  _isNarrationActive(tracks, currentTime) {
+    const narrationTrack = tracks.find((t) => t.type === 'narration');
+    if (!narrationTrack || narrationTrack.muted || narrationTrack.clips.length === 0) {
+      return false;
+    }
 
-    // Collect all active clip IDs to know which to keep
+    return narrationTrack.clips.some((clip) => {
+      const start = clip.offset || 0;
+      const end = start + (clip.duration || 0);
+      return currentTime >= start && currentTime < end;
+    });
+  }
+
+  /**
+   * Get the effective volume for a track, applying ducking if active.
+   */
+  _getEffectiveVolume(track, duckingEnabled, duckingLevel, narrationActive) {
+    if (track.muted) return 0;
+
+    let vol = track.volume;
+
+    // Apply ducking: lower non-narration audio tracks when narration is playing
+    if (duckingEnabled && narrationActive && track.type !== 'narration' && track.type !== 'captions') {
+      vol *= duckingLevel;
+    }
+
+    return vol;
+  }
+
+  /**
+   * Sync all audio tracks to the current timeline position.
+   */
+  syncToTime(tracks, currentTime, duckingEnabled = true, duckingLevel = 0.2) {
+    const audioTracks = tracks.filter((t) => t.type !== 'video');
     const activeClipIds = new Set();
+    const narrationActive = this._isNarrationActive(tracks, currentTime);
 
     for (const track of audioTracks) {
       for (const clip of track.clips) {
@@ -64,18 +91,15 @@ class AudioEngine {
         const audio = this._getOrCreateAudio(clip);
         if (!audio) continue;
 
-        // Apply track volume and mute
-        audio.volume = track.muted ? 0 : track.volume;
+        // Apply effective volume (with ducking)
+        audio.volume = this._getEffectiveVolume(track, duckingEnabled, duckingLevel, narrationActive);
 
-        // Is this clip currently active (timeline position falls within it)?
         if (currentTime >= clipStart && currentTime < clipEnd) {
           const localTime = currentTime - clipStart;
 
-          // For looping clips, wrap around
           if (clip.loop && audio.duration > 0) {
             audio.currentTime = localTime % audio.duration;
           } else {
-            // Only seek if significantly different
             if (Math.abs(audio.currentTime - localTime) > 0.3) {
               audio.currentTime = Math.min(localTime, audio.duration || localTime);
             }
@@ -85,7 +109,6 @@ class AudioEngine {
             audio.play().catch(() => {});
           }
         } else {
-          // Clip is not active — pause it
           if (!audio.paused) {
             audio.pause();
           }
@@ -104,20 +127,19 @@ class AudioEngine {
   }
 
   /**
-   * Start playback. Begins the animation frame loop that keeps
-   * audio clips in sync with the video timeline.
+   * Start playback with animation frame sync loop.
    */
   start(getState) {
     this.isRunning = true;
     const state = getState();
-    this.syncToTime(state.tracks, state.currentTime);
+    this.syncToTime(state.tracks, state.currentTime, state.duckingEnabled, state.duckingLevel);
 
-    // Tick loop: re-sync audio clips as the timeline progresses
     const tick = () => {
       if (!this.isRunning) return;
 
       const state = getState();
       const audioTracks = state.tracks.filter((t) => t.type !== 'video');
+      const narrationActive = this._isNarrationActive(state.tracks, state.currentTime);
 
       for (const track of audioTracks) {
         for (const clip of track.clips) {
@@ -128,8 +150,10 @@ class AudioEngine {
           const audio = this.audioElements.get(clip.id);
           if (!audio) continue;
 
-          // Update volume in real-time (user may adjust mid-playback)
-          audio.volume = track.muted ? 0 : track.volume;
+          // Apply effective volume with ducking in real-time
+          audio.volume = this._getEffectiveVolume(
+            track, state.duckingEnabled, state.duckingLevel, narrationActive
+          );
 
           const ct = state.currentTime;
 
@@ -188,7 +212,7 @@ class AudioEngine {
   }
 
   /**
-   * Update a specific track's volume (called when user drags a slider).
+   * Update a specific track's volume.
    */
   updateTrackVolume(trackId, volume, muted, tracks) {
     const track = tracks.find((t) => t.id === trackId);

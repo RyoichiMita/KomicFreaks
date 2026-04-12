@@ -1,6 +1,6 @@
 # 📋 Komic Freaks Studio — Project Board
 
-> Last updated: 2026-04-11
+> Last updated: 2026-04-12
 
 ---
 
@@ -42,6 +42,15 @@
 - [x] Export modal shows captions + transitions count badges
 - [x] IndexedDB blob persistence (full project resume with media files)
 - [x] Deployment configs (vercel.json, netlify.toml, COOP/COEP headers)
+- [x] Anime Clip Extractor — YouTube audio fetch via yt-dlp proxy
+- [x] Anime Clip Extractor — waveform scrubber with IN/OUT point selection
+- [x] Anime Clip Extractor — clip library with tag/character/series metadata
+- [x] AI Vocal Isolation — Demucs integration (clip-first architecture)
+- [x] AI Vocal Isolation — torchcodec dependency fix
+- [x] Cloud AI Captions — OpenAI Whisper API (no local server needed)
+- [x] Cloud AI Captions — auto-detect 90+ languages (Japanese, Korean, etc.)
+- [x] Cloud AI Captions — Original / English / Both translation modes
+- [x] Cloud AI Captions — track source selector (Video, Audio, Narration, SFX)
 
 ---
 

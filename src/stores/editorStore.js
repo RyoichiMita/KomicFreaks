@@ -55,6 +55,13 @@ const useEditorStore = create((set, get) => ({
     { id: 'captions', label: 'Captions', type: 'captions', clips: [], muted: false, volume: 1 },
   ],
 
+  // --- Audio Ducking ---
+  // Lowers music/audio/sfx volume when narration is playing
+  duckingEnabled: true,
+  duckingLevel: 0.2, // Duck to 20% volume during narration
+  setDuckingEnabled: (enabled) => set({ duckingEnabled: enabled }),
+  setDuckingLevel: (level) => set({ duckingLevel: level }),
+
   addClipToTrack: (trackId, clip) => {
     const state = get();
     history.push(state.tracks);

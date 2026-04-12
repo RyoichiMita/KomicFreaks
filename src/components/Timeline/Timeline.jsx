@@ -48,6 +48,10 @@ export default function Timeline() {
     redo,
     canUndo,
     canRedo,
+    duckingEnabled,
+    duckingLevel,
+    setDuckingEnabled,
+    setDuckingLevel,
   } = useEditorStore();
 
   const [dragState, setDragState] = useState(null);
@@ -226,6 +230,59 @@ export default function Timeline() {
           <span style={{ fontSize: '0.688rem', color: 'var(--text-muted)', marginRight: 'var(--space-sm)' }}>
             {formatDuration(totalDuration)}
           </span>
+
+          {/* Audio Ducking Toggle */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              marginRight: 'var(--space-sm)',
+              padding: '2px 6px',
+              borderRadius: 'var(--radius-sm)',
+              background: duckingEnabled ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
+              border: `1px solid ${duckingEnabled ? 'rgba(139, 92, 246, 0.3)' : 'transparent'}`,
+              transition: 'all 0.2s ease',
+            }}
+            title={duckingEnabled
+              ? `Audio Ducking ON — music lowers to ${Math.round(duckingLevel * 100)}% during narration`
+              : 'Audio Ducking OFF — music plays at full volume during narration'}
+          >
+            <button
+              className="btn-icon"
+              style={{ width: '18px', height: '18px' }}
+              onClick={() => setDuckingEnabled(!duckingEnabled)}
+            >
+              <span style={{
+                fontSize: '0.625rem',
+                opacity: duckingEnabled ? 1 : 0.4,
+              }}>
+                🔉
+              </span>
+            </button>
+            {duckingEnabled && (
+              <input
+                type="range"
+                className="track-volume-slider"
+                min="0.05"
+                max="0.5"
+                step="0.05"
+                value={duckingLevel}
+                onChange={(e) => setDuckingLevel(parseFloat(e.target.value))}
+                onClick={(e) => e.stopPropagation()}
+                style={{ width: '40px' }}
+                title={`Duck to ${Math.round(duckingLevel * 100)}%`}
+              />
+            )}
+            <span style={{
+              fontSize: '0.5rem',
+              color: duckingEnabled ? 'var(--accent-primary-light)' : 'var(--text-muted)',
+              whiteSpace: 'nowrap',
+            }}>
+              {duckingEnabled ? `${Math.round(duckingLevel * 100)}%` : 'Duck'}
+            </span>
+          </div>
+
           <div className="zoom-control">
             <button
               className="btn-icon"
