@@ -201,6 +201,9 @@ const useVaultStore = create((set, get) => ({
       dateAcquired: entry.dateAcquired || new Date().toISOString().split('T')[0],
       notes: entry.notes || '',
       badge: entry.badge || 'owned',
+      quantity: entry.quantity || 1,
+      displayStatus: entry.displayStatus || 'display', // 'display' | 'storage' | 'for_sale'
+      storageLocation: entry.storageLocation || '',
       addedAt: Date.now(),
     };
     await saveCollectionItem(item);
@@ -243,7 +246,7 @@ const useVaultStore = create((set, get) => ({
     state.collection.forEach(entry => {
       const figure = state.figures.find(f => f.id === entry.figureId);
       if (figure) {
-        total += figure.msrpUsd || 0;
+        total += (figure.msrpUsd || 0) * (entry.quantity || 1);
       }
     });
     return total;

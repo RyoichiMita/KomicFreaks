@@ -91,6 +91,9 @@ export default function FigureProfile() {
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [formNotes, setFormNotes] = useState('');
   const [formBadge, setFormBadge] = useState('owned');
+  const [formQuantity, setFormQuantity] = useState(1);
+  const [formDisplayStatus, setFormDisplayStatus] = useState('display');
+  const [formStorageLocation, setFormStorageLocation] = useState('');
 
   if (!figure) return null;
 
@@ -105,6 +108,9 @@ export default function FigureProfile() {
       dateAcquired: formDate,
       notes: formNotes,
       badge: formBadge,
+      quantity: formQuantity,
+      displayStatus: formDisplayStatus,
+      storageLocation: formStorageLocation,
     });
     setShowAddForm(false);
     showNotification(`${figure.name} added to vault! ${BADGE_OPTIONS.find(b => b.value === formBadge)?.icon}`, 'success');
@@ -409,6 +415,55 @@ export default function FigureProfile() {
                   rows={3}
                 />
               </div>
+
+              {/* Quantity (Army Builder) */}
+              <div className="vault-form-group">
+                <label className="vault-form-label">Quantity (Army Builder)</label>
+                <div className="vault-quantity-control">
+                  <button
+                    className="vault-qty-btn"
+                    onClick={() => setFormQuantity(Math.max(1, formQuantity - 1))}
+                  >−</button>
+                  <span className="vault-qty-value">{formQuantity}</span>
+                  <button
+                    className="vault-qty-btn"
+                    onClick={() => setFormQuantity(formQuantity + 1)}
+                  >+</button>
+                </div>
+              </div>
+
+              {/* Display Status */}
+              <div className="vault-form-group">
+                <label className="vault-form-label">Display Status</label>
+                <div className="vault-display-status-picker">
+                  {[
+                    { value: 'display', label: '📍 On Display', color: 'var(--accent-success)' },
+                    { value: 'storage', label: '📦 In Storage', color: 'var(--accent-tertiary)' },
+                    { value: 'for_sale', label: '💰 For Sale', color: 'var(--accent-warning)' },
+                  ].map(s => (
+                    <button
+                      key={s.value}
+                      className={`vault-status-btn ${formDisplayStatus === s.value ? 'active' : ''}`}
+                      onClick={() => setFormDisplayStatus(s.value)}
+                      style={{ '--status-color': s.color }}
+                    >{s.label}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Storage Location */}
+              {formDisplayStatus === 'storage' && (
+                <div className="vault-form-group">
+                  <label className="vault-form-label">Storage Location</label>
+                  <input
+                    type="text"
+                    className="vault-form-input"
+                    placeholder="e.g. Shelf B3, Bin 12, Closet Top..."
+                    value={formStorageLocation}
+                    onChange={(e) => setFormStorageLocation(e.target.value)}
+                  />
+                </div>
+              )}
 
               <div className="vault-form-actions">
                 <button className="btn btn-secondary" onClick={() => setShowAddForm(false)}>Cancel</button>

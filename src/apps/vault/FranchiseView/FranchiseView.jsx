@@ -199,7 +199,7 @@ export default function FranchiseView() {
             return (
               <div
                 key={fig.id}
-                className={`vault-figure-card ${owned ? 'vault-figure-card-owned' : ''}`}
+                className={`vault-figure-card ${owned ? 'vault-figure-card-owned' : 'vault-figure-card-unowned'}`}
                 onClick={() => openFigure(fig.id)}
                 style={{ animationDelay: `${Math.min(i, 20) * 0.03}s` }}
               >
@@ -211,6 +211,16 @@ export default function FranchiseView() {
                   {owned && entry && (
                     <div className={`vault-badge-indicator vault-badge-${entry.badge}`}>
                       {entry.badge === 'grail' ? '🏆' : entry.badge === 'quest' ? '🗡️' : '✅'}
+                    </div>
+                  )}
+                  {/* Army Builder quantity badge */}
+                  {owned && entry && (entry.quantity || 1) > 1 && (
+                    <div className="vault-quantity-badge">x{entry.quantity}</div>
+                  )}
+                  {/* Display status indicator */}
+                  {owned && entry && entry.displayStatus && entry.displayStatus !== 'display' && (
+                    <div className={`vault-status-indicator vault-status-${entry.displayStatus}`}>
+                      {entry.displayStatus === 'storage' ? '📦' : '💰'}
                     </div>
                   )}
                   {fig.releaseType !== 'general' && (

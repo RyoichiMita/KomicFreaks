@@ -3712,6 +3712,46 @@
   border-color: rgba(16, 185, 129, 0.3);
 }
 
+/* Greyscale for unowned — pops to color when owned */
+.vault-figure-card-unowned .vault-figure-card-img-wrap {
+  filter: grayscale(0.7) brightness(0.75);
+  transition: filter 0.4s ease;
+}
+.vault-figure-card-unowned:hover .vault-figure-card-img-wrap {
+  filter: grayscale(0.3) brightness(0.9);
+}
+
+/* Army Builder quantity badge */
+.vault-quantity-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: var(--accent-primary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.03em;
+  z-index: 3;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* Display status indicator */
+.vault-status-indicator {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  font-size: 0.85rem;
+  z-index: 3;
+  background: rgba(0,0,0,0.6);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+  line-height: 1;
+}
+.vault-status-storage { border: 1px solid var(--accent-tertiary); }
+.vault-status-for_sale { border: 1px solid var(--accent-warning); }
+
 .vault-figure-card-img-wrap {
   position: relative;
   width: 100%;
@@ -4286,6 +4326,72 @@
   gap: var(--space-sm);
   justify-content: flex-end;
   margin-top: var(--space-sm);
+}
+
+/* Quantity counter control */
+.vault-quantity-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--bg-surface);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  width: fit-content;
+}
+.vault-qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vault-qty-btn:hover {
+  background: var(--accent-primary);
+  color: #fff;
+}
+.vault-qty-value {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+/* Display Status Picker */
+.vault-display-status-picker {
+  display: flex;
+  gap: var(--space-xs);
+}
+.vault-status-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+.vault-status-btn:hover {
+  border-color: var(--status-color);
+  color: var(--text-primary);
+}
+.vault-status-btn.active {
+  border-color: var(--status-color);
+  background: color-mix(in srgb, var(--status-color) 15%, transparent);
+  color: var(--status-color);
 }
 
 /* --- My Vault --- */
