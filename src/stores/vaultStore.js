@@ -68,7 +68,7 @@ const useVaultStore = create((set, get) => ({
   seriesDefinitions: seriesData,
 
   // --- Navigation ---
-  vaultView: 'home', // 'home' | 'franchise' | 'figure' | 'myVault' | 'series' | 'calendar'
+  vaultView: 'home', // 'home' | 'franchise' | 'figure' | 'myVault' | 'series' | 'calendar' | 'photoStudio'
   setVaultView: (view) => set({ vaultView: view }),
 
   activeFranchise: null,

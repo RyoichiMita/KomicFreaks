@@ -7,6 +7,7 @@ import {
   ChevronRight,
   BarChart3,
   Package,
+  Camera,
 } from 'lucide-react';
 import useVaultStore from '../../../stores/vaultStore';
 import FigureImage from '../FigureImage';
@@ -175,6 +176,10 @@ export default function VaultHome() {
         <button className="vault-quick-btn" onClick={() => setVaultView('calendar')}>
           <Calendar size={18} />
           <span>Releases</span>
+        </button>
+        <button className="vault-quick-btn vault-quick-btn-ai" onClick={() => setVaultView('photoStudio')}>
+          <Camera size={18} />
+          <span>AI Studio</span>
         </button>
       </div>
 

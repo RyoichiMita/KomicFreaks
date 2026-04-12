@@ -6,6 +6,7 @@ import FigureProfile from './FigureProfile/FigureProfile';
 import MyVault from './MyVault/MyVault';
 import SeriesTracker from './SeriesTracker/SeriesTracker';
 import ReleaseCalendar from './ReleaseCalendar/ReleaseCalendar';
+import PhotoStudio from './PhotoStudio/PhotoStudio';
 
 export default function VaultApp() {
   const { vaultView, initCollection, collectionLoaded, notification } = useVaultStore();
@@ -28,6 +29,8 @@ export default function VaultApp() {
         return <SeriesTracker />;
       case 'calendar':
         return <ReleaseCalendar />;
+      case 'photoStudio':
+        return <PhotoStudio onBack={() => useVaultStore.getState().setVaultView('home')} />;
       default:
         return <VaultHome />;
     }

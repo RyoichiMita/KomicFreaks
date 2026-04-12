@@ -69,8 +69,8 @@
 ## 🤖 To Do — AI Intelligence Layer
 
 > Full strategy: `docs/guidance/ai_strategy.md`  
-> API: OpenAI (`gpt-4o-mini` / `gpt-4o`) + ElevenLabs  
-> Service hub: `src/services/aiService.js`
+> API: OpenAI (`gpt-4o-mini` / `gpt-4o`) + ElevenLabs + Gemini  
+> Service hub: `src/services/aiService.js` + `src/services/geminiService.js`
 
 ### 🟢 Tier 1: Quick Wins (1–2 days each)
 | # | Feature | Side | API | Est. Cost | Status |
@@ -78,23 +78,24 @@
 | 1 | AI Script Writer — template + figure name → full narration script | Video Editor | `gpt-4o-mini` | ~$0.001/call | ⬜ To Do |
 | 2 | AI Video Metadata Generator — YouTube title, description, tags, hashtags | Video Editor | `gpt-4o-mini` | ~$0.002/call | ⬜ To Do |
 | 3 | AI Figure Lore Cards — character backstory, trivia, power level | SHF Vault | `gpt-4o-mini` | ~$0.001/call | ✅ Done |
+| 4 | AI Photo Studio — scene backgrounds + figure reimaginer | SHF Vault | Gemini | ~$0.003/image | ✅ Done |
 
 ### 🟡 Tier 2: Core Differentiators (3–5 days each)
 | # | Feature | Side | API | Est. Cost | Status |
 |---|---------|------|-----|-----------|--------|
-| 4 | AI Edit Copilot — chat sidebar with function calling into editor | Video Editor | `gpt-4o` | ~$0.02/turn | ⬜ To Do |
-| 5 | AI Thumbnail Generator (Enhanced) — DALL-E backgrounds + AI text | Video Editor | `dall-e-3` | ~$0.04/image | ⬜ To Do |
-| 6 | AI Bootleg Detector — photo upload → Vision AI legit score 0–100% | SHF Vault | `gpt-4o` vision | ~$0.02/scan | ⬜ To Do |
-| 7 | AI Collection Insights — portfolio analysis, completion tips, sell recs | SHF Vault | `gpt-4o-mini` | ~$0.005/call | ⬜ To Do |
+| 5 | AI Edit Copilot — chat sidebar with function calling into editor | Video Editor | `gpt-4o` | ~$0.02/turn | ⬜ To Do |
+| 6 | AI Thumbnail Generator (Enhanced) — DALL-E backgrounds + AI text | Video Editor | `dall-e-3` | ~$0.04/image | ⬜ To Do |
+| 7 | AI Bootleg Detector — photo upload → Vision AI legit score 0–100% | SHF Vault | `gpt-4o` vision | ~$0.02/scan | ⬜ To Do |
+| 8 | AI Collection Insights — portfolio analysis, completion tips, sell recs | SHF Vault | `gpt-4o-mini` | ~$0.005/call | ⬜ To Do |
 
 ### 🔴 Tier 3: Premium / Future (1–2 weeks each)
 | # | Feature | Side | API | Depends On | Status |
 |---|---------|------|-----|------------|--------|
-| 8 | AI Voice Clone — nephew's voice via ElevenLabs cloning | Video Editor | ElevenLabs Pro | Paid plan | ⬜ To Do |
-| 9 | AI Price Predictor — market value forecasting per figure | SHF Vault | `gpt-4o` | Pricing Engine (P4) | ⬜ Blocked |
-| 10 | AI Auto-Edit — one-click full edit pipeline (cut+transitions+music+captions) | Video Editor | Orchestrator | All edit features | ⬜ Blocked |
-| 11 | AI Smart B-Roll — auto-insert relevant clips during narration | Video Editor | `gpt-4o` vision | Clip library tagging | ⬜ Blocked |
-| 12 | AI Trade Advisor — compare two figures for fair trade analysis | SHF Vault | `gpt-4o-mini` | Live pricing (P4) | ⬜ Blocked |
+| 9 | AI Voice Clone — nephew's voice via ElevenLabs cloning | Video Editor | ElevenLabs Pro | Paid plan | ⬜ To Do |
+| 10 | AI Price Predictor — market value forecasting per figure | SHF Vault | `gpt-4o` | Pricing Engine (P4) | ⬜ Blocked |
+| 11 | AI Auto-Edit — one-click full edit pipeline (cut+transitions+music+captions) | Video Editor | Orchestrator | All edit features | ⬜ Blocked |
+| 12 | AI Smart B-Roll — auto-insert relevant clips during narration | Video Editor | `gpt-4o` vision | Clip library tagging | ⬜ Blocked |
+| 13 | AI Trade Advisor — compare two figures for fair trade analysis | SHF Vault | `gpt-4o-mini` | Live pricing (P4) | ⬜ Blocked |
 
 ---
 
