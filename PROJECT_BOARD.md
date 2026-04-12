@@ -66,32 +66,36 @@
 
 ---
 
-## 🆕 NEW PROJECT: The Private Vault (S.H. Figuarts Collector App)
+## ✅ Done — The Private Vault (S.H. Figuarts Collector App)
 
 > Full blueprint saved: `docs/guidance/private_vault_blueprint.md`
 
-### What we already have (from Komic Freaks) that carries over:
-| Existing Capability | Reusable For Vault? |
-|---------------------|---------------------|
-| ✅ Vite + React scaffold | Yes — same stack |
-| ✅ Dark anime design system | Yes — adapt the theme |
-| ✅ Supabase experience (from other projects) | Yes — auth, DB, storage |
-| ✅ IndexedDB persistence | Yes — offline collection cache |
-| ✅ Notification toast system | Yes — alerts |
-| ✅ Agent infrastructure | Yes — reuse .agent/ folder |
+### Phase 1: Core Engine — COMPLETE ✅
+| Feature | Status |
+|---------|--------|
+| Figure database + retail grid layout | ✅ 40 Dragon Ball figures |
+| FigureImage component (Amazon + gradient fallbacks) | ✅ |
+| Owned/Wishlist toggle (grey → color) | ✅ Greyscale for unowned |
+| Army Builder quantity counter (x2, x5) | ✅ Counter + grid badge |
+| Status flags (On Display / In Storage / For Sale) | ✅ Picker + grid indicators |
+| Storage tracking (bin/shelf) | ✅ Conditional text field |
+| Portfolio value calculator (MSRP × quantity) | ✅ |
+| Series Tracker with completion % | ✅ 4 series defined |
+| Release Calendar with countdown timers | ✅ |
+| Search + Filter + Sort | ✅ By arc, release type, name, price |
+| Badge system (Owned/Quest/Grail) | ✅ |
+| COEP fix for external images | ✅ credentialless policy |
 
-### What's brand new (not in any project):
+### Phase 1: Still To Do
 | Feature | Phase | Priority |
 |---------|-------|----------|
-| Figure database + retail grid layout | P1 | 🔴 High |
-| Owned/Wishlist toggle (grey → color) | P1 | 🔴 High |
-| Army Builder quantity counter | P1 | 🔴 High |
 | Digital instruction manuals library | P1 | 🟡 Medium |
-| Status flags (Display/Storage/For Sale) | P1 | 🔴 High |
-| Storage tracking (bin/shelf) | P1 | 🟡 Medium |
-| Portfolio value calculator (MSRP) | P1 | 🔴 High |
 | Triple news feed (Global/Custom/Leaks) | P1 | 🟡 Medium |
 | Dual-date release calendar (JP vs Global) | P1 | 🟡 Medium |
+
+### Phase 2: Premium Tier (Not Started)
+| Feature | Phase | Priority |
+|---------|-------|----------|
 | Live market tracker + price graphs | P2 | 🔴 High |
 | Grail Hunter price alerts | P2 | 🔴 High |
 | Insurance PDF report generator | P2 | 🟡 Medium |
