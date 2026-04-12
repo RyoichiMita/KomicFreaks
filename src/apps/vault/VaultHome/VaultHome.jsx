@@ -9,6 +9,7 @@ import {
   Package,
 } from 'lucide-react';
 import useVaultStore from '../../../stores/vaultStore';
+import FigureImage from '../FigureImage';
 
 // Franchise metadata for the grid
 const FRANCHISE_META = {
@@ -146,11 +147,9 @@ export default function VaultHome() {
                 className="vault-search-result"
                 onClick={() => { setSearchQuery(''); openFigure(fig.id); }}
               >
-                <img
-                  src={fig.imageUrl}
-                  alt={fig.name}
+                <FigureImage
+                  figure={fig}
                   className="vault-search-result-img"
-                  onError={(e) => { e.target.src = '/logo.png'; }}
                 />
                 <div className="vault-search-result-info">
                   <div className="vault-search-result-name">{fig.name}</div>
@@ -237,11 +236,9 @@ export default function VaultHome() {
                 onClick={() => openFigure(fig.id)}
               >
                 <div className="vault-figure-card-mini-img-wrap">
-                  <img
-                    src={fig.imageUrl}
-                    alt={fig.name}
+                  <FigureImage
+                    figure={fig}
                     className="vault-figure-card-mini-img"
-                    onError={(e) => { e.target.src = '/logo.png'; }}
                   />
                   {collection.some(c => c.figureId === fig.id) && (
                     <div className="vault-figure-owned-badge">✅</div>

@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import useVaultStore from '../../../stores/vaultStore';
+import FigureImage from '../FigureImage';
 
 const RELEASE_TYPES = [
   { value: 'all', label: 'All Types' },
@@ -203,12 +204,9 @@ export default function FranchiseView() {
                 style={{ animationDelay: `${Math.min(i, 20) * 0.03}s` }}
               >
                 <div className="vault-figure-card-img-wrap">
-                  <img
-                    src={fig.imageUrl}
-                    alt={fig.name}
+                  <FigureImage
+                    figure={fig}
                     className="vault-figure-card-img"
-                    loading="lazy"
-                    onError={(e) => { e.target.src = '/logo.png'; }}
                   />
                   {owned && entry && (
                     <div className={`vault-badge-indicator vault-badge-${entry.badge}`}>
@@ -243,12 +241,9 @@ export default function FranchiseView() {
                 className={`vault-figure-list-item ${owned ? 'vault-figure-list-item-owned' : ''}`}
                 onClick={() => openFigure(fig.id)}
               >
-                <img
-                  src={fig.imageUrl}
-                  alt={fig.name}
+                <FigureImage
+                  figure={fig}
                   className="vault-figure-list-img"
-                  loading="lazy"
-                  onError={(e) => { e.target.src = '/logo.png'; }}
                 />
                 <div className="vault-figure-list-info">
                   <div className="vault-figure-list-name">{fig.name}</div>

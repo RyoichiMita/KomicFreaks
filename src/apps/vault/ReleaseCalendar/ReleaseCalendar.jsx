@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import useVaultStore from '../../../stores/vaultStore';
+import FigureImage from '../FigureImage';
 
 function getCountdown(dateStr) {
   const target = new Date(dateStr);
@@ -66,11 +67,9 @@ export default function ReleaseCalendar() {
                   className="vault-calendar-item vault-calendar-item-upcoming"
                   onClick={() => openFigure(fig.id)}
                 >
-                  <img
-                    src={fig.imageUrl}
-                    alt={fig.name}
+                  <FigureImage
+                    figure={fig}
                     className="vault-calendar-img"
-                    onError={(e) => { e.target.src = '/logo.png'; }}
                   />
                   <div className="vault-calendar-info">
                     <div className="vault-calendar-name">{fig.name}</div>
@@ -120,11 +119,9 @@ export default function ReleaseCalendar() {
               className="vault-calendar-item"
               onClick={() => openFigure(fig.id)}
             >
-              <img
-                src={fig.imageUrl}
-                alt={fig.name}
+              <FigureImage
+                figure={fig}
                 className="vault-calendar-img"
-                onError={(e) => { e.target.src = '/logo.png'; }}
               />
               <div className="vault-calendar-info">
                 <div className="vault-calendar-name">{fig.name}</div>

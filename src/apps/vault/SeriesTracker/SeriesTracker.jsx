@@ -6,6 +6,7 @@ import {
   Swords,
 } from 'lucide-react';
 import useVaultStore from '../../../stores/vaultStore';
+import FigureImage from '../FigureImage';
 
 export default function SeriesTracker() {
   const {
@@ -70,11 +71,9 @@ export default function SeriesTracker() {
                 className={`vault-series-figure-item ${owned ? 'vault-series-figure-owned' : 'vault-series-figure-missing'}`}
                 onClick={() => openFigure(fid)}
               >
-                <img
-                  src={fig.imageUrl}
-                  alt={fig.name}
+                <FigureImage
+                  figure={fig}
                   className="vault-series-figure-img"
-                  onError={(e) => { e.target.src = '/logo.png'; }}
                 />
                 <div className="vault-series-figure-info">
                   <div className="vault-series-figure-name">{fig.name}</div>

@@ -18,6 +18,7 @@ import {
   Star,
 } from 'lucide-react';
 import useVaultStore from '../../../stores/vaultStore';
+import FigureImage from '../FigureImage';
 
 const CONDITION_OPTIONS = [
   { value: 'misb', label: 'MISB (Mint in Sealed Box)' },
@@ -136,11 +137,9 @@ export default function FigureProfile() {
         {/* Gallery */}
         <div className="vault-gallery">
           <div className="vault-gallery-main">
-            <img
-              src={figure.galleryUrls?.[activeGalleryIdx] || figure.imageUrl}
-              alt={figure.name}
+            <FigureImage
+              figure={{ ...figure, imageUrl: figure.galleryUrls?.[activeGalleryIdx] || figure.imageUrl }}
               className="vault-gallery-img"
-              onError={(e) => { e.target.src = '/logo.png'; }}
             />
             {inCollection && collectionEntry && (
               <div className={`vault-profile-badge vault-badge-${collectionEntry.badge}`}>
@@ -152,13 +151,11 @@ export default function FigureProfile() {
           {figure.galleryUrls?.length > 1 && (
             <div className="vault-gallery-thumbs">
               {figure.galleryUrls.map((url, i) => (
-                <img
+                <FigureImage
                   key={i}
-                  src={url}
-                  alt={`${figure.name} ${i + 1}`}
+                  figure={{ ...figure, imageUrl: url }}
                   className={`vault-gallery-thumb ${i === activeGalleryIdx ? 'active' : ''}`}
                   onClick={() => setActiveGalleryIdx(i)}
-                  onError={(e) => { e.target.src = '/logo.png'; }}
                 />
               ))}
             </div>

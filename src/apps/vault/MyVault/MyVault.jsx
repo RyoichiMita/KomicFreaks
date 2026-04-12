@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import useVaultStore from '../../../stores/vaultStore';
+import FigureImage from '../FigureImage';
 
 export default function MyVault() {
   const {
@@ -115,12 +116,9 @@ export default function MyVault() {
               style={{ animationDelay: `${Math.min(i, 20) * 0.03}s` }}
             >
               <div className="vault-figure-card-img-wrap">
-                <img
-                  src={figure.imageUrl}
-                  alt={figure.name}
+                <FigureImage
+                  figure={figure}
                   className="vault-figure-card-img"
-                  loading="lazy"
-                  onError={(e) => { e.target.src = '/logo.png'; }}
                 />
                 <div className={`vault-badge-indicator vault-badge-${badge}`}>
                   {badge === 'grail' ? '🏆' : badge === 'quest' ? '🗡️' : '✅'}
