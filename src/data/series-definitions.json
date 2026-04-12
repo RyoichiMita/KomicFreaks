@@ -88,5 +88,59 @@
     "icon": "✨",
     "requiredFigureIds": ["shf-db-001", "shf-db-034", "shf-db-035"],
     "isPreDefined": true
+  },
+  {
+    "id": "set-straw-hat-onigashima",
+    "name": "Straw Hat Pirates (Onigashima)",
+    "franchise": "One Piece",
+    "description": "The full crew during the Raid on Onigashima",
+    "icon": "🏴‍☠️",
+    "requiredFigureIds": ["shf-op-002", "shf-op-003", "shf-op-004", "shf-op-038", "shf-op-039", "shf-op-007"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-romance-dawn-crew",
+    "name": "Romance Dawn Crew",
+    "franchise": "One Piece",
+    "description": "The original East Blue Straw Hats",
+    "icon": "⛵",
+    "requiredFigureIds": ["shf-op-010", "shf-op-011", "shf-op-012", "shf-op-013", "shf-op-014", "shf-op-015"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-marineford-warriors",
+    "name": "Marineford Warriors",
+    "franchise": "One Piece",
+    "description": "Key fighters from the Paramount War",
+    "icon": "⚔️",
+    "requiredFigureIds": ["shf-op-022", "shf-op-023", "shf-op-024", "shf-op-025", "shf-op-026"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-asl-brothers",
+    "name": "ASL Brothers",
+    "franchise": "One Piece",
+    "description": "Ace, Sabo, and Luffy — the sworn brothers",
+    "icon": "🤝",
+    "requiredFigureIds": ["shf-op-016", "shf-op-017", "shf-op-010"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-netflix-live-action",
+    "name": "Netflix Live-Action Cast",
+    "franchise": "One Piece",
+    "description": "The real-life Straw Hat crew from the Netflix adaptation",
+    "icon": "🎬",
+    "requiredFigureIds": ["shf-op-032", "shf-op-033", "shf-op-034", "shf-op-035", "shf-op-036"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-egghead-island",
+    "name": "Egghead Island Arc",
+    "franchise": "One Piece",
+    "description": "The latest arc — Future Island Egghead",
+    "icon": "🥚",
+    "requiredFigureIds": ["shf-op-027", "shf-op-028", "shf-op-029", "shf-op-030", "shf-op-031"],
+    "isPreDefined": true
   }
 ]

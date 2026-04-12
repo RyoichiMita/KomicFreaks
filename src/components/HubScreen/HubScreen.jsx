@@ -54,7 +54,7 @@ export default function HubScreen({ onNavigate }) {
           </div>
           <div className="hub-stat">
             <Star size={14} />
-            <span>40+ SHF Figures</span>
+            <span>80+ SHF Figures</span>
           </div>
           <div className="hub-stat">
             <Sparkles size={14} />

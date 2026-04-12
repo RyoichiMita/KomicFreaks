@@ -1,6 +1,9 @@
 import { create } from 'zustand';
-import figuresData from '../data/shf-dragonball.json';
+import dragonBallData from '../data/shf-dragonball.json';
+import onePieceData from '../data/shf-onepiece.json';
 import seriesData from '../data/series-definitions.json';
+
+const figuresData = [...dragonBallData, ...onePieceData];
 
 // --- IndexedDB Helpers ---
 const DB_NAME = 'komic-vault';

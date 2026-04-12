@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 // Character name → gradient mapping for nice placeholders
 const CHARACTER_GRADIENTS = {
+  // Dragon Ball
   'goku': 'linear-gradient(135deg, #f59e0b, #ef4444)',
   'vegeta': 'linear-gradient(135deg, #3b82f6, #1e3a5f)',
   'broly': 'linear-gradient(135deg, #22c55e, #15803d)',
@@ -24,6 +25,35 @@ const CHARACTER_GRADIENTS = {
   'nappa': 'linear-gradient(135deg, #78350f, #92400e)',
   'majin': 'linear-gradient(135deg, #7c3aed, #6d28d9)',
   'vegito': 'linear-gradient(135deg, #3b82f6, #f59e0b)',
+  // One Piece
+  'luffy': 'linear-gradient(135deg, #dc2626, #f59e0b)',
+  'zoro': 'linear-gradient(135deg, #16a34a, #064e3b)',
+  'sanji': 'linear-gradient(135deg, #f59e0b, #eab308)',
+  'nami': 'linear-gradient(135deg, #f97316, #fbbf24)',
+  'usopp': 'linear-gradient(135deg, #92400e, #a16207)',
+  'chopper': 'linear-gradient(135deg, #ec4899, #f472b6)',
+  'robin': 'linear-gradient(135deg, #7c3aed, #4c1d95)',
+  'franky': 'linear-gradient(135deg, #2563eb, #0ea5e9)',
+  'brook': 'linear-gradient(135deg, #1e1b4b, #7c3aed)',
+  'ace': 'linear-gradient(135deg, #ef4444, #f97316)',
+  'sabo': 'linear-gradient(135deg, #2563eb, #3b82f6)',
+  'shanks': 'linear-gradient(135deg, #dc2626, #7f1d1d)',
+  'law': 'linear-gradient(135deg, #fbbf24, #1e1b4b)',
+  'kid': 'linear-gradient(135deg, #dc2626, #7c2d12)',
+  'yamato': 'linear-gradient(135deg, #06b6d4, #0891b2)',
+  'kaido': 'linear-gradient(135deg, #581c87, #312e81)',
+  'mihawk': 'linear-gradient(135deg, #1e1b4b, #6d28d9)',
+  'blackbeard': 'linear-gradient(135deg, #1c1917, #57534e)',
+  'teach': 'linear-gradient(135deg, #1c1917, #57534e)',
+  'marco': 'linear-gradient(135deg, #0ea5e9, #fbbf24)',
+  'crocodile': 'linear-gradient(135deg, #a16207, #78350f)',
+  'hancock': 'linear-gradient(135deg, #dc2626, #ec4899)',
+  'boa': 'linear-gradient(135deg, #dc2626, #ec4899)',
+  'bonney': 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+  'kizaru': 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+  'borsalino': 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+  'gear': 'linear-gradient(135deg, #dc2626, #f59e0b)',
+  'nico': 'linear-gradient(135deg, #7c3aed, #4c1d95)',
   'default': 'linear-gradient(135deg, #6b7280, #4b5563)',
 };
 
