@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import useVaultStore from '../../../stores/vaultStore';
 import FigureImage from '../FigureImage';
+import LoreCard from './LoreCard';
 
 const CONDITION_OPTIONS = [
   { value: 'misb', label: 'MISB (Mint in Sealed Box)' },
@@ -258,6 +259,9 @@ export default function FigureProfile() {
               )}
             </div>
           )}
+
+          {/* AI Lore Card */}
+          <LoreCard figure={figure} />
 
           {/* Buy Link */}
           {figure.amazonUrl && (

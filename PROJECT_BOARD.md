@@ -77,7 +77,7 @@
 |---|---------|------|-----|-----------|--------|
 | 1 | AI Script Writer — template + figure name → full narration script | Video Editor | `gpt-4o-mini` | ~$0.001/call | ⬜ To Do |
 | 2 | AI Video Metadata Generator — YouTube title, description, tags, hashtags | Video Editor | `gpt-4o-mini` | ~$0.002/call | ⬜ To Do |
-| 3 | AI Figure Lore Cards — character backstory, trivia, power level | SHF Vault | `gpt-4o-mini` | ~$0.001/call | ⬜ To Do |
+| 3 | AI Figure Lore Cards — character backstory, trivia, power level | SHF Vault | `gpt-4o-mini` | ~$0.001/call | ✅ Done |
 
 ### 🟡 Tier 2: Core Differentiators (3–5 days each)
 | # | Feature | Side | API | Est. Cost | Status |

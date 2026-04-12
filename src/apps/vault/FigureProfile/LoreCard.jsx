@@ -82,14 +82,14 @@ export default function LoreCard({ figure }) {
           <Sparkles size={18} />
           <div className="vault-lore-trigger-text">
             <span className="vault-lore-trigger-title">
-              {isCached ? 'View AI Lore Card' : 'Generate AI Lore Card'}
+              {isCached ? 'View Fighter Dossier' : 'Unleash Fighter Dossier'}
             </span>
             <span className="vault-lore-trigger-sub">
               {!aiConfigured
                 ? 'OpenAI API key required'
                 : isCached
                 ? 'Cached — loads instantly ⚡'
-                : 'Character backstory, trivia & power level'}
+                : 'Powers, saga history & battle intel'}
             </span>
           </div>
           {isCached && <span className="vault-lore-cached-badge">Cached</span>}
@@ -143,7 +143,7 @@ export default function LoreCard({ figure }) {
       >
         <div className="vault-lore-header-left">
           <Sparkles size={16} className="vault-lore-icon" />
-          <h3 className="vault-lore-title">AI Lore Card</h3>
+          <h3 className="vault-lore-title">Fighter Dossier</h3>
           <span className="vault-lore-ai-badge">GPT</span>
         </div>
         <div className="vault-lore-header-right">
