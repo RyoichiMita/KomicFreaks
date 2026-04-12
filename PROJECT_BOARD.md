@@ -52,58 +52,60 @@
 - [ ] **🗄️ SHF Vault** — Action figure collection manager (sister app within Komic Freaks platform)
   - 📄 Full spec: `docs/SHF_VAULT_SPEC.md`
 
-  **Phase 1: The Brain (Database & Schema)**
-  - [ ] Platform shell refactor (hub/studio/vault routing)
-  - [ ] Design & implement `figures` table (name, franchise, arc, release_type, body_spec, accessories, images, barcode, status)
-  - [ ] Design & implement `user_inventory` table (condition, purchase_price, store, date_acquired, badges, missing_parts_notes)
-  - [ ] Design & implement `series_sets` table (pre-defined saga sets with completion_mode toggle)
-  - [ ] Design & implement `wishlist` table (priority levels, grail/quest badges)
-  - [ ] Design & implement `sold_archive` table (history archive for sold/traded figures, profit/loss)
-  - [ ] Vault Store (Zustand) + IndexedDB persistence
-  - [ ] Seed initial Dragon Ball SHF dataset (test set)
+  **Phase 1: The Brain (Database & Schema)** ✅
+  - [x] Platform shell refactor (hub/studio/vault routing)
+  - [x] Vault Store (Zustand) + IndexedDB persistence
+  - [x] Seed initial Dragon Ball SHF dataset (40 figures)
+  - [x] Series definitions data (10 pre-defined sets)
+  - [ ] Design & implement `figures` table (Supabase — cloud sync)
+  - [ ] Design & implement `user_inventory` table (Supabase)
+  - [ ] Design & implement `series_sets` table (Supabase)
+  - [ ] Design & implement `wishlist` table (Supabase)
+  - [ ] Design & implement `sold_archive` table (Supabase)
 
-  **Phase 2: The Vault (Collection Management)**
-  - [ ] Catalog UI — Franchise grid (default home screen) with figure profiles
-  - [ ] Figure Profile Page — full details (Release Type, Body Spec, Accessory Checklist, official photo gallery)
-  - [ ] Variants as separate entries (Best Selection, Event Exclusive, Colour Swap = different catalog items)
-  - [ ] Sort toggle: Franchise (default) ↔ Release Date (chronological timeline)
-  - [ ] Filter system: Franchise, Release Year, Released/To-Be-Released, Exclusive, Set
-  - [ ] Search-and-Tap — search character name → pick variant → add to vault
+  **Phase 2: The Vault (Collection Management)** ✅ MVP
+  - [x] Catalog UI — Franchise grid (home screen) with figure profiles
+  - [x] Figure Profile Page — full details (Release Type, Body Spec, Accessory Checklist, gallery)
+  - [x] Sort toggle: Default / Release Date / Name A-Z / Price
+  - [x] Filter system: Release Type, Story Arc (with chip filters)
+  - [x] Search-and-Tap — live search → pick figure → view profile → add to vault
+  - [x] Condition tracking (deep): MISB, Opened/Displayed, No Box, Box Damage, Brown Shipper Box
+  - [x] Badge system: Owned, Quest (hunting), Grail (crown jewel)
+  - [x] Grid / List view toggle
+  - [x] Amazon buy link on figure profiles
+  - [x] Authenticity Guide per figure (sticker type, box tips, joint colour)
+  - [x] Investment tracking: Price Paid, Currency, Purchase Date per figure
+  - [ ] Variants as separate entries (Best Selection, Event Exclusive = different catalog items)
   - [ ] Barcode Scanner — phone camera scans UPC → auto-lookup & add
   - [ ] Mass Add (Saga Check-off) — go to set → check all / select multiple
-  - [ ] Condition tracking (deep): MISB, Opened/Displayed, No Box, Box Damage, Brown Shipper Box
-  - [ ] Badge system: Owned, Quest (hunting), Grail (crown jewel)
-  - [ ] Digital Shelf — Retail Grid layout with official product photos
-  - [ ] Box Art vs Figure Toggle (awaiting user decision: Dynamic Swap / Tap Effect / Status-Based)
-  - [ ] Accessory & parts tracking (official checklist + user "Notes" for missing parts)
-  - [ ] Investment tracking: Price Paid, Store, Purchase Date per figure
-  - [ ] Profit/Loss portfolio summary ("You spent $X, collection worth $Y")
-  - [ ] Sold/Trade Archive — move figures to "History" (not delete), preserve lifetime P/L
+  - [ ] Digital Shelf — Retail Grid layout with official product photos (requires image proxy)
+  - [ ] Box Art vs Figure Toggle
+  - [ ] Profit/Loss portfolio summary
+  - [ ] Sold/Trade Archive
 
-  **Phase 3: The Completionist (Saga Tracking)**
-  - [ ] Pre-defined "Mini-Sets" (Ginyu Force, Avengers, etc.) with completion bars — FREE
+  **Phase 3: The Completionist (Saga Tracking)** ✅ MVP
+  - [x] Pre-defined "Mini-Sets" (Ginyu Force, Namek Saga, Cell Saga, etc.) with completion bars — FREE
+  - [x] Visual completion progress ring per set ("7/10 collected")
+  - [x] One-tap Quest badge for missing figures
   - [ ] Custom user-created sets — PAID subscription
   - [ ] Completion Level Toggles: Passive / Standard / Die-Hard
-  - [ ] Visual completion progress bar per set ("7/10 collected")
 
-  **Phase 4: The Wallet (Monetisation & Financial)**
-  - [ ] Grail Calculator / Wishlist: Grand Total, Priority Breakdown (High/Low), Savings Goal
-  - [ ] Monthly Toy Budget tracker ("X months to save for your Grails")
-  - [ ] Triple-source pricing: Live Scraper (eBay/Mercari) + Manual Curator + Community Consensus
-  - [ ] Affiliate links: "Buy Now" on figure profiles (eBay, Amazon, AmiAmi, Hobby Genki)
-  - [ ] Premium subscription paywall: custom photos, custom sets
-  - [ ] Authenticity section: Side-by-side Real vs. Bootleg photo gallery per figure
-  - [ ] Release Calendar: sorted list + phone calendar integration + countdown timers
-  - [ ] Daily Digest notifications (FREE): daily summary of wishlist items available
-  - [ ] PDF Insurance Report export (premium)
+  **Phase 4: The UI Polish & Data**
+  - [x] Release Calendar with countdown timers
+  - [x] My Vault collection view with badge filtering
+  - [ ] Figure image proxy/caching (shfiguarts.com blocks hotlinking)
+  - [ ] Expand catalog: Naruto, One Piece, Marvel, Star Wars franchises
+  - [ ] Grail Calculator / Wishlist: Grand Total, Priority Breakdown
+  - [ ] Monthly Toy Budget tracker
+  - [ ] Affiliate links: eBay, AmiAmi, Hobby Genki
+  - [ ] Premium subscription paywall
+  - [ ] PDF Insurance Report export
 
   **Phase 5: The Pulse (Community — Future, post critical mass)**
-  - [ ] Public profile sharing (see other people's collections)
+  - [ ] Public profile sharing
   - [ ] Annual "Grail of Grails" community voting
-  - [ ] Community "Legit Check" area (photo submissions for authenticity)
-  - [ ] Internal marketplace with "For Sale/Trade" status
-  - [ ] Transaction fees (3-5%) on marketplace sales
-  - [ ] "Trusted Collector" verified seller badge
+  - [ ] Community "Legit Check" area
+  - [ ] Internal marketplace
   - [ ] Push notifications for pre-order windows & restocks
 
 ---
