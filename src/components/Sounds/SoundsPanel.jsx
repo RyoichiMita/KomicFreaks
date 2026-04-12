@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Volume2, Play, Plus, Search, Square, Music } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Volume2, Play, Plus, Search, Square, Music, Upload, Trash2 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { playSFX, getSFXDuration, getSFXBlobUrl } from '../../services/soundEffects';
 import { MUSIC_TRACKS, previewMusic, stopPreview, getMusicDuration, getMusicBlobUrl } from '../../services/musicLibrary';
@@ -56,6 +56,78 @@ export default function SoundsPanel() {
   const [searchTerm, setSearchTerm] = useState('');
   const [playingId, setPlayingId] = useState(null);
   const [previewingMusicId, setPreviewingMusicId] = useState(null);
+  const [customSounds, setCustomSounds] = useState([]);
+  const fileInputRef = useRef(null);
+  const previewAudioRef = useRef(null);
+
+  // --- Custom SFX Upload ---
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    files.forEach((file) => {
+      if (!file.type.startsWith('audio/')) {
+        showNotification(`"${file.name}" is not an audio file`, 'error');
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      const audio = new Audio(url);
+
+      audio.addEventListener('loadedmetadata', () => {
+        const name = file.name.replace(/\.[^.]+$/, ''); // Remove extension
+        setCustomSounds((prev) => [
+          ...prev,
+          {
+            id: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            label: name,
+            emoji: '🎧',
+            url,
+            file,
+            duration: audio.duration,
+            isCustom: true,
+          },
+        ]);
+        showNotification(`Added custom SFX: "${name}"`, 'success');
+      });
+    });
+
+    // Reset input so same file can be uploaded again
+    e.target.value = '';
+  };
+
+  const handlePreviewCustom = (sound) => {
+    if (previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current = null;
+    }
+
+    if (playingId === sound.id) {
+      setPlayingId(null);
+      return;
+    }
+
+    const audio = new Audio(sound.url);
+    audio.play().catch(() => {});
+    audio.onended = () => setPlayingId(null);
+    previewAudioRef.current = audio;
+    setPlayingId(sound.id);
+  };
+
+  const handleAddCustomToTimeline = (sound) => {
+    addClipToTrack('sfx', {
+      name: `${sound.emoji} ${sound.label}`,
+      url: sound.url,
+      startTime: 0,
+      duration: sound.duration,
+      offset: 0,
+      type: 'sfx',
+      isCustom: true,
+    });
+    showNotification(`Added "${sound.label}" to SFX track`, 'success');
+  };
+
+  const removeCustomSound = (id) => {
+    setCustomSounds((prev) => prev.filter((s) => s.id !== id));
+  };
 
   const handlePreview = (sound) => {
     setPlayingId(sound.file);
@@ -79,7 +151,7 @@ export default function SoundsPanel() {
     showNotification(`Added "${sound.label}" to timeline`, 'success');
   };
 
-  // Filter sounds by search
+  // Filter sounds by search (include custom)
   const filteredCategories = SOUND_CATEGORIES.map((cat) => ({
     ...cat,
     sounds: cat.sounds.filter(
@@ -88,6 +160,10 @@ export default function SoundsPanel() {
         s.file.toLowerCase().includes(searchTerm.toLowerCase())
     ),
   })).filter((cat) => cat.sounds.length > 0);
+
+  const filteredCustom = customSounds.filter((s) =>
+    s.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="ai-panel sounds-panel">
@@ -127,6 +203,88 @@ export default function SoundsPanel() {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ paddingLeft: '32px', fontSize: '0.75rem' }}
           />
+        </div>
+
+        {/* Custom SFX Upload */}
+        <div className="property-group">
+          <div className="property-group-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Your Sounds</span>
+            <span style={{ fontSize: '0.563rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+              {customSounds.length} uploaded
+            </span>
+          </div>
+
+          {/* Upload Button */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="audio/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleFileUpload}
+          />
+          <button
+            className="btn"
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              padding: '10px',
+              marginBottom: customSounds.length > 0 ? 'var(--space-sm)' : 0,
+              border: '1px dashed var(--border-default)',
+              background: 'var(--bg-deep)',
+              fontSize: '0.688rem',
+              gap: '6px',
+            }}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload size={14} />
+            Upload Custom SFX (WAV, MP3)
+          </button>
+
+          {/* Custom Sounds List */}
+          {filteredCustom.length > 0 && (
+            <div className="sound-grid" style={{ marginTop: 'var(--space-xs)' }}>
+              {filteredCustom.map((sound) => {
+                const isPlaying = playingId === sound.id;
+                return (
+                  <div
+                    key={sound.id}
+                    className={`sound-btn ${isPlaying ? 'playing' : ''}`}
+                    style={{ position: 'relative' }}
+                  >
+                    <button
+                      className="sound-preview-btn"
+                      onClick={() => handlePreviewCustom(sound)}
+                      title={`Preview "${sound.label}"`}
+                    >
+                      <span className="sound-emoji">{isPlaying ? '⏹️' : sound.emoji}</span>
+                      <span className="sound-label" style={{ maxWidth: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {sound.label}
+                      </span>
+                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                      <button
+                        className="sound-add-btn"
+                        onClick={() => handleAddCustomToTimeline(sound)}
+                        title={`Add "${sound.label}" to SFX track`}
+                        style={{ flex: 1 }}
+                      >
+                        <Plus size={10} />
+                      </button>
+                      <button
+                        className="sound-add-btn"
+                        onClick={() => removeCustomSound(sound.id)}
+                        title="Remove"
+                        style={{ flex: 1, color: 'var(--accent-danger)' }}
+                      >
+                        <Trash2 size={8} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {filteredCategories.map((category) => (
