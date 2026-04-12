@@ -11,7 +11,7 @@ const history = createHistoryManager();
 
 const useEditorStore = create((set, get) => ({
   // --- View State ---
-  activeTab: 'welcome', // 'welcome' | 'editor' | 'narration' | 'sounds' | 'thumbnail' | 'captions' | 'templates'
+  activeTab: 'hub', // 'hub' | 'welcome' | 'editor' | 'vault'
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   // --- Project ---

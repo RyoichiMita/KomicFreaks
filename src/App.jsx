@@ -15,6 +15,8 @@ import {
   Type,
   MessageSquareText,
   Clapperboard,
+  Archive,
+  Home,
 } from 'lucide-react';
 import './App.css';
 
@@ -32,6 +34,8 @@ import ExportModal from './components/Export/ExportModal';
 import CaptionsPanel from './components/Captions/CaptionsPanel';
 import AutoCaptionsPanel from './components/AutoCaptions/AutoCaptionsPanel';
 import AnimeClipsPanel from './components/AnimeClips/AnimeClipsPanel';
+import HubScreen from './components/HubScreen/HubScreen';
+import VaultApp from './apps/vault/VaultApp';
 
 // Tools available in the right tool strip inside the editor
 const TOOLS = [
@@ -125,15 +129,155 @@ function App() {
   const toolPanel = renderToolPanel();
   const activeToolData = TOOLS.find((t) => t.id === activeTool);
 
-  // --- Welcome screen ---
-  if (activeTab === 'welcome') {
+  // --- Platform Hub ---
+  if (activeTab === 'hub') {
     return (
       <div className="app">
         <header className="header">
           <div className="header-left">
             <div className="logo">
               <img src="/logo.png" alt="Komic Freaks" className="logo-img" />
+            </div>
+          </div>
+          <div className="header-center">
+            <div className="header-mode">
+              <Home size={14} />
+              <span>Hub</span>
+            </div>
+          </div>
+          <div className="header-right">
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>v2.0</span>
+          </div>
+        </header>
+
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <HubScreen onNavigate={(appId) => {
+            if (appId === 'studio') setActiveTab('welcome');
+            else if (appId === 'vault') setActiveTab('vault');
+          }} />
+        </div>
+
+        <div className="status-bar">
+          <div className="status-left">
+            <div className="status-item">
+              <div className="status-indicator" />
+              Ready
+            </div>
+          </div>
+          <div className="status-right">
+            <span>Komic Freaks Platform v2.0</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- SHF Vault ---
+  if (activeTab === 'vault') {
+    return (
+      <div className="app">
+        <header className="header">
+          <div className="header-left">
+            <div
+              className="logo"
+              onClick={() => setActiveTab('hub')}
+              style={{ cursor: 'pointer' }}
+            >
+              <img src="/logo.png" alt="Komic Freaks" className="logo-img" />
+            </div>
+            <div className="header-app-switcher">
+              <button
+                className="header-app-btn"
+                onClick={() => setActiveTab('hub')}
+              >
+                <Home size={14} />
+              </button>
+              <button
+                className="header-app-btn"
+                onClick={() => setActiveTab('welcome')}
+              >
+                <Film size={14} />
+                <span className="header-app-btn-label">Studio</span>
+              </button>
+              <button className="header-app-btn header-app-btn-active">
+                <Archive size={14} />
+                <span className="header-app-btn-label">Vault</span>
+              </button>
+            </div>
+          </div>
+          <div className="header-center">
+            <div className="header-mode header-mode-vault">
+              <Archive size={14} />
+              <span>SHF Vault</span>
+            </div>
+          </div>
+          <div className="header-right">
+            <span style={{
+              fontSize: '0.7rem',
+              color: 'var(--accent-warning)',
+              padding: '2px 8px',
+              background: 'rgba(245, 158, 11, 0.15)',
+              borderRadius: 'var(--radius-full)',
+            }}>
+              S.H. Figuarts
+            </span>
+          </div>
+        </header>
+
+        <div className="vault-container">
+          <VaultApp />
+        </div>
+
+        <div className="status-bar">
+          <div className="status-left">
+            <div className="status-item">
+              <div className="status-indicator" />
+              Vault Active
+            </div>
+          </div>
+          <div className="status-right">
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Archive size={10} /> SHF Collection Manager
+            </span>
+            <span>v2.0</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Welcome screen ---
+  if (activeTab === 'welcome') {
+    return (
+      <div className="app">
+        <header className="header">
+          <div className="header-left">
+            <div
+              className="logo"
+              onClick={() => setActiveTab('hub')}
+              style={{ cursor: 'pointer' }}
+            >
+              <img src="/logo.png" alt="Komic Freaks" className="logo-img" />
               <span className="logo-studio">Studio</span>
+            </div>
+            <div className="header-app-switcher">
+              <button
+                className="header-app-btn"
+                onClick={() => setActiveTab('hub')}
+              >
+                <Home size={14} />
+              </button>
+              <button className="header-app-btn header-app-btn-active">
+                <Film size={14} />
+                <span className="header-app-btn-label">Studio</span>
+              </button>
+              <button
+                className="header-app-btn"
+                onClick={() => setActiveTab('vault')}
+              >
+                <Archive size={14} />
+                <span className="header-app-btn-label">Vault</span>
+              </button>
             </div>
           </div>
           <div className="header-right">
@@ -156,7 +300,7 @@ function App() {
             </div>
           </div>
           <div className="status-right">
-            <span>v1.0</span>
+            <span>v2.0</span>
           </div>
         </div>
       </div>
@@ -171,7 +315,7 @@ function App() {
         <div className="header-left">
           <div
             className="logo"
-            onClick={() => setActiveTab('welcome')}
+            onClick={() => setActiveTab('hub')}
             style={{ cursor: 'pointer' }}
           >
             <img src="/logo.png" alt="Komic Freaks" className="logo-img" />

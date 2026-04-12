@@ -1,0 +1,92 @@
+[
+  {
+    "id": "set-ginyu-force",
+    "name": "Ginyu Force",
+    "franchise": "Dragon Ball",
+    "description": "Complete the elite fighting team of Frieza's army",
+    "icon": "⭐",
+    "requiredFigureIds": ["shf-db-015", "shf-db-016", "shf-db-017", "shf-db-018", "shf-db-019"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-namek-saga",
+    "name": "Namek Saga Heroes",
+    "franchise": "Dragon Ball",
+    "description": "The Z-Fighters who battled on Planet Namek",
+    "icon": "🌍",
+    "requiredFigureIds": ["shf-db-005", "shf-db-003", "shf-db-026", "shf-db-027", "shf-db-022"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-namek-villains",
+    "name": "Frieza's Army",
+    "franchise": "Dragon Ball",
+    "description": "Frieza and his loyal warriors from Namek",
+    "icon": "👿",
+    "requiredFigureIds": ["shf-db-010", "shf-db-007", "shf-db-008", "shf-db-015", "shf-db-016", "shf-db-017", "shf-db-018", "shf-db-019"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-cell-saga",
+    "name": "Cell Saga Fighters",
+    "franchise": "Dragon Ball",
+    "description": "The fighters of the Cell Games",
+    "icon": "🏟️",
+    "requiredFigureIds": ["shf-db-020", "shf-db-021", "shf-db-036", "shf-db-025", "shf-db-028"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-buu-saga",
+    "name": "Buu Saga",
+    "franchise": "Dragon Ball",
+    "description": "Heroes and villains of the Majin Buu arc",
+    "icon": "💥",
+    "requiredFigureIds": ["shf-db-002", "shf-db-023", "shf-db-024", "shf-db-012"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-saiyan-saga",
+    "name": "Saiyan Saga",
+    "franchise": "Dragon Ball",
+    "description": "The first major battle — Saiyans invade Earth",
+    "icon": "🛸",
+    "requiredFigureIds": ["shf-db-022", "shf-db-027", "shf-db-009", "shf-db-037"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-battle-of-gods",
+    "name": "Battle of Gods",
+    "franchise": "Dragon Ball",
+    "description": "The beginning of Dragon Ball Super",
+    "icon": "🐱",
+    "requiredFigureIds": ["shf-db-030", "shf-db-031"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-tournament-of-power",
+    "name": "Tournament of Power",
+    "franchise": "Dragon Ball",
+    "description": "Universe 7's greatest fighters",
+    "icon": "🏆",
+    "requiredFigureIds": ["shf-db-013", "shf-db-014", "shf-db-038"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-super-hero",
+    "name": "Super Hero Movie",
+    "franchise": "Dragon Ball",
+    "description": "The fighters from Dragon Ball Super: Super Hero",
+    "icon": "🦸",
+    "requiredFigureIds": ["shf-db-006", "shf-db-011", "shf-db-040"],
+    "isPreDefined": true
+  },
+  {
+    "id": "set-daima",
+    "name": "Dragon Ball DAIMA",
+    "franchise": "Dragon Ball",
+    "description": "The mini versions from the DAIMA series",
+    "icon": "✨",
+    "requiredFigureIds": ["shf-db-001", "shf-db-034", "shf-db-035"],
+    "isPreDefined": true
+  }
+]

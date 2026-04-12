@@ -1,0 +1,1064 @@
+[
+  {
+    "id": "shf-db-001",
+    "name": "Super Saiyan 4 Son Goku (MINI)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball DAIMA",
+    "subLine": "DAIMA",
+    "releaseType": "general",
+    "releaseDate": "2025-10-01",
+    "status": "released",
+    "msrp": 4950,
+    "msrpUsd": 34.99,
+    "bodySpec": "3.0",
+    "arc": "DAIMA",
+    "accessories": ["3x Pairs of optional hands", "Kamehameha effect", "Power-up aura effect"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-son-goku-mini-dragon-ball-daima-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-son-goku-mini-dragon-ball-daima-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-son-goku-mini-dragon-ball-daima-2.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-son-goku-mini-dragon-ball-daima-3.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11817/SHFiguarts-Super-Saiyan-4-SON-GOKU-MINI---Dragon-Ball-DAIMA--.html",
+    "amazonUrl": "https://www.amazon.com/dp/B0FKBW9NKL",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Official Bandai holographic seal on bottom flap",
+      "jointColor": "Standard flesh tone joints"
+    }
+  },
+  {
+    "id": "shf-db-002",
+    "name": "Super Buu (Reissue)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Buu Saga",
+    "releaseType": "general",
+    "releaseDate": "2025-08-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 54.99,
+    "bodySpec": "2.0",
+    "arc": "Buu Saga",
+    "accessories": ["4x Pairs of optional hands", "Angry face plate", "Smirking face plate", "Antenna attack effect"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-buu-reissue-dragon-ball-z-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-buu-reissue-dragon-ball-z-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-buu-reissue-dragon-ball-z-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11804/SHFiguarts-Super-Buu-Reissue---Dragon-Ball-Z--.html",
+    "amazonUrl": "https://www.amazon.com/dp/B0GQF7ZHMM",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Tamashii Nations branding on side panels",
+      "jointColor": "Pink-tinted joints"
+    }
+  },
+  {
+    "id": "shf-db-003",
+    "name": "Nail",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2025-07-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 54.99,
+    "bodySpec": "3.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Battle damage arm", "Serious face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-nail-dragon-ball-z-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-nail-dragon-ball-z-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-nail-dragon-ball-z-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11801/SHFiguarts-Nail--Dragon-Ball-Z-.html",
+    "amazonUrl": "https://www.amazon.com/dp/B0F5Q1PZCR",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Green character-themed window box",
+      "jointColor": "Green-tinted joints"
+    }
+  },
+  {
+    "id": "shf-db-004",
+    "name": "BROLY (40th Anniversary Reissue Edition)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Broly Movie",
+    "releaseType": "general",
+    "releaseDate": "2025-06-01",
+    "status": "released",
+    "msrp": 9900,
+    "msrpUsd": 69.99,
+    "bodySpec": "2.0",
+    "arc": "Broly Movie",
+    "accessories": ["3x Pairs of optional hands", "Energy blast effect", "Roaring face plate", "Powered-up hair part"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-broly-40th-anniversary-reissue-edition-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-broly-40th-anniversary-reissue-edition-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-broly-40th-anniversary-reissue-edition-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11795/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "40th Anniversary gold foil emblem on box",
+      "jointColor": "Standard flesh tone joints"
+    }
+  },
+  {
+    "id": "shf-db-005",
+    "name": "Super Saiyan Son Goku - Legendary Super Saiyan",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2023-03-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 54.99,
+    "bodySpec": "3.0",
+    "arc": "Frieza Saga",
+    "accessories": ["4x Pairs of optional hands", "Kamehameha effect", "Angry face plate", "SSJ aura effect base"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-son-goku-legendary-super-saiyan-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-son-goku-legendary-super-saiyan-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-son-goku-legendary-super-saiyan-2.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-son-goku-legendary-super-saiyan-3.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10898/",
+    "amazonUrl": "https://www.amazon.com/dp/B0BXQSKH8J",
+    "authenticity": {
+      "stickerType": "Gold Toei/Shueisha",
+      "boxTips": "Premium window box with SSJ Goku illustration",
+      "jointColor": "Flesh tone with gold-tint arms"
+    }
+  },
+  {
+    "id": "shf-db-006",
+    "name": "Piccolo Super Hero",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Super Hero Movie",
+    "releaseType": "general",
+    "releaseDate": "2023-06-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "3.0",
+    "arc": "Super Hero Movie",
+    "accessories": ["3x Pairs of optional hands", "Weighted cape (removable)", "Special Beam Cannon effect"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-super-hero-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-super-hero-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-super-hero-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10950/",
+    "amazonUrl": "https://www.amazon.com/dp/B0B6WRPXZ1",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Super Hero movie-branded window box",
+      "jointColor": "Green joints throughout"
+    }
+  },
+  {
+    "id": "shf-db-007",
+    "name": "Zarbon",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2025-05-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 54.99,
+    "bodySpec": "3.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Cape (soft goods)", "Elegant face plate", "Scouter (removable)"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-zarbon-dragon-ball-z-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-zarbon-dragon-ball-z-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-zarbon-dragon-ball-z-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11790/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Standard SHF Dragon Ball window box",
+      "jointColor": "Blue-green tinted joints"
+    }
+  },
+  {
+    "id": "shf-db-008",
+    "name": "Dodoria",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2025-04-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 54.99,
+    "bodySpec": "3.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Energy blast effect", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-dodoria-dragon-ball-z-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-dodoria-dragon-ball-z-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11785/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Standard SHF Dragon Ball window box",
+      "jointColor": "Pink flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-009",
+    "name": "Vegeta (Saiyan Saga)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Saiyan Saga",
+    "releaseType": "general",
+    "releaseDate": "2022-11-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Saiyan Saga",
+    "accessories": ["4x Pairs of optional hands", "Galick Gun effect", "Scouter (removable)", "Smirking face plate", "Shouting face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-saiyan-saga-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-saiyan-saga-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-saiyan-saga-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10650/",
+    "amazonUrl": "https://www.amazon.com/dp/B09YFRJNXQ",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Character silhouette on side panel",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-010",
+    "name": "Frieza (Final Form)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2023-01-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "3.0",
+    "arc": "Frieza Saga",
+    "accessories": ["4x Pairs of optional hands", "Death Beam effect", "Tail (articulated)", "Smirking face plate", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-frieza-final-form-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-frieza-final-form-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-frieza-final-form-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10850/",
+    "amazonUrl": "https://www.amazon.com/dp/B0B4R1MRDC",
+    "authenticity": {
+      "stickerType": "Gold Toei/Shueisha",
+      "boxTips": "Purple-themed window box",
+      "jointColor": "White/purple joints"
+    }
+  },
+  {
+    "id": "shf-db-011",
+    "name": "Son Gohan (Beast)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Super Hero Movie",
+    "releaseType": "general",
+    "releaseDate": "2023-09-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 54.99,
+    "bodySpec": "3.0",
+    "arc": "Super Hero Movie",
+    "accessories": ["3x Pairs of optional hands", "Ki blast effect", "Beast mode aura stand", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-son-gohan-beast-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-gohan-beast-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-gohan-beast-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11050/",
+    "amazonUrl": "https://www.amazon.com/dp/B0BYW56PPT",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Super Hero movie branding, red accent box",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-012",
+    "name": "Vegito (Super Saiyan God Super Saiyan)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Future Trunks Saga",
+    "releaseType": "general",
+    "releaseDate": "2020-09-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 59.99,
+    "bodySpec": "2.0",
+    "arc": "Future Trunks Saga",
+    "accessories": ["4x Pairs of optional hands", "Final Kamehameha effect", "Spirit Sword effect", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-vegito-super-saiyan-god-super-saiyan-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-vegito-super-saiyan-god-super-saiyan-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9800/",
+    "amazonUrl": "https://www.amazon.com/dp/B084GFBPP4",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Blue energy-themed box art",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-013",
+    "name": "Son Goku (Ultra Instinct)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Tournament of Power",
+    "releaseType": "general",
+    "releaseDate": "2020-06-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 59.99,
+    "bodySpec": "2.0",
+    "arc": "Tournament of Power",
+    "accessories": ["4x Pairs of optional hands", "Kamehameha effect", "Ultra Instinct aura", "Calm face plate", "Intense face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-ultra-instinct-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-ultra-instinct-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-ultra-instinct-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9600/",
+    "amazonUrl": "https://www.amazon.com/dp/B07XKLMXZK",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Silver/white box with UI aura art",
+      "jointColor": "Standard flesh tone with silver sheen"
+    }
+  },
+  {
+    "id": "shf-db-014",
+    "name": "Jiren (Full Power)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Tournament of Power",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2021-03-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 65.00,
+    "bodySpec": "2.0",
+    "arc": "Tournament of Power",
+    "accessories": ["3x Pairs of optional hands", "Power Impact effect", "Glaring eyes face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-jiren-full-power-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-jiren-full-power-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10100/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Premium Bandai exclusive packaging, brown shipper",
+      "jointColor": "Gray joints"
+    }
+  },
+  {
+    "id": "shf-db-015",
+    "name": "Captain Ginyu",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2022-06-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Milky Cannon effect", "Body Change pose hand", "Ginyu Force pose stand"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-captain-ginyu-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-captain-ginyu-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-captain-ginyu-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10500/",
+    "amazonUrl": "https://www.amazon.com/dp/B09SHFXYNS",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Purple Ginyu Force themed box",
+      "jointColor": "Purple-tinted joints"
+    }
+  },
+  {
+    "id": "shf-db-016",
+    "name": "Recoome",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2022-08-01",
+    "status": "released",
+    "msrp": 8250,
+    "msrpUsd": 59.99,
+    "bodySpec": "2.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Recoome Eraser Gun effect", "Ginyu Force pose stand"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-recoome-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-recoome-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10550/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, brown shipper included",
+      "jointColor": "Flesh tone, large body build"
+    }
+  },
+  {
+    "id": "shf-db-017",
+    "name": "Burter",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2022-10-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 55.00,
+    "bodySpec": "2.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Blue Hurricane effect", "Ginyu Force pose stand"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-burter-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-burter-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10600/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, blue themed packaging",
+      "jointColor": "Blue joints"
+    }
+  },
+  {
+    "id": "shf-db-018",
+    "name": "Jeice",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2022-12-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 55.00,
+    "bodySpec": "2.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Crusher Ball effect", "Ginyu Force pose stand"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-jeice-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-jeice-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10620/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, red themed packaging",
+      "jointColor": "Red/orange joints"
+    }
+  },
+  {
+    "id": "shf-db-019",
+    "name": "Guldo",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2023-02-01",
+    "status": "released",
+    "msrp": 5500,
+    "msrpUsd": 39.99,
+    "bodySpec": "2.0",
+    "arc": "Namek Saga",
+    "accessories": ["2x Pairs of optional hands", "Psychic power effect", "Ginyu Force pose stand"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-guldo-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-guldo-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10700/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, smallest Ginyu Force box",
+      "jointColor": "Green joints"
+    }
+  },
+  {
+    "id": "shf-db-020",
+    "name": "Perfect Cell",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Cell Saga",
+    "releaseType": "general",
+    "releaseDate": "2021-06-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Cell Saga",
+    "accessories": ["4x Pairs of optional hands", "Kamehameha effect", "Solar Flare effect", "Smirking face plate", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-perfect-cell-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-perfect-cell-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-perfect-cell-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10200/",
+    "amazonUrl": "https://www.amazon.com/dp/B08H2DSKQH",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Green-themed window box",
+      "jointColor": "Green and dark green joints"
+    }
+  },
+  {
+    "id": "shf-db-021",
+    "name": "Super Saiyan 2 Son Gohan",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Cell Saga",
+    "releaseType": "general",
+    "releaseDate": "2021-09-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Cell Saga",
+    "accessories": ["4x Pairs of optional hands", "Father-Son Kamehameha effect", "Battle damaged arm", "Angry face plate", "Calm SSJ2 face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-2-son-gohan-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-2-son-gohan-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-2-son-gohan-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10250/",
+    "amazonUrl": "https://www.amazon.com/dp/B091BGWFLJ",
+    "authenticity": {
+      "stickerType": "Gold Toei/Shueisha",
+      "boxTips": "Cell Saga themed with lightning art",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-022",
+    "name": "Son Goku (A Saiyan Raised on Earth)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Saiyan Saga",
+    "releaseType": "general",
+    "releaseDate": "2018-04-01",
+    "status": "released",
+    "msrp": 6050,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Saiyan Saga",
+    "accessories": ["5x Pairs of optional hands", "Kamehameha effect", "Spirit Bomb right hand", "3x Face plates (Calm, Angry, Smirking)"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-a-saiyan-raised-on-earth-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-a-saiyan-raised-on-earth-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-a-saiyan-raised-on-earth-2.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-a-saiyan-raised-on-earth-3.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/8900/",
+    "amazonUrl": "https://www.amazon.com/dp/B078YY8PLJ",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Classic orange/blue SHF box design",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-023",
+    "name": "Majin Vegeta",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Buu Saga",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2021-11-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 62.00,
+    "bodySpec": "2.0",
+    "arc": "Buu Saga",
+    "accessories": ["4x Pairs of optional hands", "Final Explosion effect", "Majin M forehead detail", "Angry face plate", "Smirking face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-majin-vegeta-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-majin-vegeta-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-majin-vegeta-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10300/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, Majin symbol on box",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-024",
+    "name": "Super Saiyan 3 Son Goku",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Buu Saga",
+    "releaseType": "general",
+    "releaseDate": "2019-08-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 52.99,
+    "bodySpec": "2.0",
+    "arc": "Buu Saga",
+    "accessories": ["4x Pairs of optional hands", "Kamehameha effect", "SSJ3 hair (articulated)", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-3-son-goku-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-3-son-goku-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-3-son-goku-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9200/",
+    "amazonUrl": "https://www.amazon.com/dp/B07N2KCVL2",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "SSJ3 long hair visible through window",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-025",
+    "name": "Trunks (Super Saiyan)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Cell Saga",
+    "releaseType": "general",
+    "releaseDate": "2020-03-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Cell Saga",
+    "accessories": ["4x Pairs of optional hands", "Sword + Scabbard", "Burning Attack effect", "Calm face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-trunks-super-saiyan-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-trunks-super-saiyan-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9500/",
+    "amazonUrl": "https://www.amazon.com/dp/B07VB8XQN1",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Capsule Corp jacket visible in window",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-026",
+    "name": "Krillin (Earth's Strongest Man)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Namek Saga",
+    "releaseType": "general",
+    "releaseDate": "2019-03-01",
+    "status": "released",
+    "msrp": 5500,
+    "msrpUsd": 39.99,
+    "bodySpec": "2.0",
+    "arc": "Namek Saga",
+    "accessories": ["3x Pairs of optional hands", "Destructo Disc effect", "Battle stance hand", "Scared face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-krillin-earths-strongest-man-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-krillin-earths-strongest-man-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9100/",
+    "amazonUrl": "https://www.amazon.com/dp/B07GFCH3R9",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Smaller box due to compact figure",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-027",
+    "name": "Piccolo (Proud Namekian)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Saiyan Saga",
+    "releaseType": "general",
+    "releaseDate": "2018-10-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 52.99,
+    "bodySpec": "2.0",
+    "arc": "Saiyan Saga",
+    "accessories": ["4x Pairs of optional hands", "Special Beam Cannon effect", "Weighted cape & turban (removable)", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-proud-namekian-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-proud-namekian-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-proud-namekian-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9000/",
+    "amazonUrl": "https://www.amazon.com/dp/B07BFHCNFZ",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Tall box due to figure height + turban",
+      "jointColor": "Green joints throughout"
+    }
+  },
+  {
+    "id": "shf-db-028",
+    "name": "Android 18",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Cell Saga",
+    "releaseType": "general",
+    "releaseDate": "2020-10-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Cell Saga",
+    "accessories": ["3x Pairs of optional hands", "Energy blast effect", "Smirking face plate", "Vest (removable)"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-android-18-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-android-18-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9700/",
+    "amazonUrl": "https://www.amazon.com/dp/B085HGJ4N9",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Cell Saga android-themed box art",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-029",
+    "name": "Goku Black (Super Saiyan Rosé)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Future Trunks Saga",
+    "releaseType": "general",
+    "releaseDate": "2019-05-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 52.99,
+    "bodySpec": "2.0",
+    "arc": "Future Trunks Saga",
+    "accessories": ["4x Pairs of optional hands", "Energy Blade", "Ki blast effect", "Smirking face plate", "God Slicer Scythe"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-goku-black-super-saiyan-rose-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-goku-black-super-saiyan-rose-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9150/",
+    "amazonUrl": "https://www.amazon.com/dp/B07N2JLW71",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Dark themed box with pink energy art",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-030",
+    "name": "Son Goku (Super Saiyan God)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Battle of Gods",
+    "releaseType": "general",
+    "releaseDate": "2021-01-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Battle of Gods",
+    "accessories": ["4x Pairs of optional hands", "Kamehameha effect", "God Bind effect", "Calm face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-super-saiyan-god-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-super-saiyan-god-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9900/",
+    "amazonUrl": "https://www.amazon.com/dp/B08H54P5SN",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Red/crimson themed box art",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-031",
+    "name": "Beerus",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Battle of Gods",
+    "releaseType": "general",
+    "releaseDate": "2018-07-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 52.99,
+    "bodySpec": "1.0",
+    "arc": "Battle of Gods",
+    "accessories": ["3x Pairs of optional hands", "Hakai energy effect", "Angry face plate", "Bored face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-beerus-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-beerus-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/8950/",
+    "amazonUrl": "https://www.amazon.com/dp/B07BFDWCH8",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Purple God of Destruction themed box",
+      "jointColor": "Purple-tinted joints"
+    }
+  },
+  {
+    "id": "shf-db-032",
+    "name": "Golden Frieza",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Resurrection F",
+    "releaseType": "general",
+    "releaseDate": "2019-01-01",
+    "status": "released",
+    "msrp": 6600,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Resurrection F",
+    "accessories": ["3x Pairs of optional hands", "Death Beam effect", "Tail (articulated)", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-golden-frieza-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-golden-frieza-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9050/",
+    "amazonUrl": "https://www.amazon.com/dp/B07GFC7SZX",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Gold metallic accented box art",
+      "jointColor": "Gold/white joints"
+    }
+  },
+  {
+    "id": "shf-db-033",
+    "name": "Super Saiyan Vegeta (Premium Color Edition)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Cell Saga",
+    "releaseType": "premium_color",
+    "releaseDate": "2023-05-01",
+    "status": "released",
+    "msrp": 8800,
+    "msrpUsd": 64.99,
+    "bodySpec": "3.0",
+    "arc": "Cell Saga",
+    "accessories": ["4x Pairs of optional hands", "Big Bang Attack effect", "Proud face plate", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-vegeta-premium-color-edition-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-vegeta-premium-color-edition-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10920/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "Premium Color Edition gold label on box",
+      "jointColor": "Standard flesh tone with enhanced paint"
+    }
+  },
+  {
+    "id": "shf-db-034",
+    "name": "Son Goku (MINI) Dragon Ball DAIMA",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball DAIMA",
+    "subLine": "DAIMA",
+    "releaseType": "general",
+    "releaseDate": "2025-01-01",
+    "status": "released",
+    "msrp": 4400,
+    "msrpUsd": 29.99,
+    "bodySpec": "3.0",
+    "arc": "DAIMA",
+    "accessories": ["3x Pairs of optional hands", "Power Pole", "Nimbus cloud stand"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-mini-dragon-ball-daima-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-son-goku-mini-dragon-ball-daima-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11700/",
+    "amazonUrl": "https://www.amazon.com/dp/B0DK3N8XSH",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "DAIMA branding, smaller box size",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-035",
+    "name": "Vegeta (MINI) Dragon Ball DAIMA",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball DAIMA",
+    "subLine": "DAIMA",
+    "releaseType": "general",
+    "releaseDate": "2025-03-01",
+    "status": "released",
+    "msrp": 4400,
+    "msrpUsd": 29.99,
+    "bodySpec": "3.0",
+    "arc": "DAIMA",
+    "accessories": ["3x Pairs of optional hands", "Galick Gun effect", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-mini-dragon-ball-daima-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-mini-dragon-ball-daima-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11750/",
+    "amazonUrl": "https://www.amazon.com/dp/B0DK3PSXRH",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "DAIMA branding, smaller box size",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-036",
+    "name": "Super Saiyan Son Goku (Full Power)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Cell Saga",
+    "releaseType": "general",
+    "releaseDate": "2021-04-01",
+    "status": "released",
+    "msrp": 7150,
+    "msrpUsd": 49.99,
+    "bodySpec": "2.0",
+    "arc": "Cell Saga",
+    "accessories": ["4x Pairs of optional hands", "Instant Transmission pose hand", "Kamehameha effect", "SSJ aura base", "Calm SSJ face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-son-goku-full-power-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-son-goku-full-power-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10150/",
+    "amazonUrl": "https://www.amazon.com/dp/B08LPQKYNW",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "Cell Saga themed, green arena background art",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-037",
+    "name": "Nappa",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Z",
+    "subLine": "Saiyan Saga",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2020-01-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 59.99,
+    "bodySpec": "2.0",
+    "arc": "Saiyan Saga",
+    "accessories": ["3x Pairs of optional hands", "Volcano Explosion effect", "Angry face plate", "Scouter (removable)"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-nappa-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-nappa-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/9400/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, large box due to figure size",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-038",
+    "name": "Vegeta (Super Saiyan Blue Evolution)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Tournament of Power",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2022-03-01",
+    "status": "released",
+    "msrp": 7700,
+    "msrpUsd": 62.00,
+    "bodySpec": "2.0",
+    "arc": "Tournament of Power",
+    "accessories": ["4x Pairs of optional hands", "Final Explosion effect", "Aura stand", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-super-saiyan-blue-evolution-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-vegeta-super-saiyan-blue-evolution-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10450/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, deep blue themed box",
+      "jointColor": "Standard flesh tone"
+    }
+  },
+  {
+    "id": "shf-db-039",
+    "name": "Super Saiyan 4 Gogeta",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball GT",
+    "subLine": "Shadow Dragon Saga",
+    "releaseType": "general",
+    "releaseDate": "2022-01-01",
+    "status": "released",
+    "msrp": 8250,
+    "msrpUsd": 64.99,
+    "bodySpec": "2.0",
+    "arc": "Shadow Dragon Saga",
+    "accessories": ["4x Pairs of optional hands", "Big Bang Kamehameha effect", "Stardust Breaker effect", "Smirking face plate", "Grinning face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-gogeta-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-gogeta-1.jpg",
+      "https://www.shfiguarts.com/upload/products/shfiguarts-super-saiyan-4-gogeta-2.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/10400/",
+    "amazonUrl": "https://www.amazon.com/dp/B09H5L4MXJ",
+    "authenticity": {
+      "stickerType": "Silver Toei Animation",
+      "boxTips": "GT branding, red/blue fusion themed box",
+      "jointColor": "Standard flesh tone with red accents"
+    }
+  },
+  {
+    "id": "shf-db-040",
+    "name": "Piccolo (Power Awakening)",
+    "franchise": "Dragon Ball",
+    "line": "Dragon Ball Super",
+    "subLine": "Super Hero Movie",
+    "releaseType": "premium_bandai",
+    "releaseDate": "2024-02-01",
+    "status": "released",
+    "msrp": 8800,
+    "msrpUsd": 64.99,
+    "bodySpec": "3.0",
+    "arc": "Super Hero Movie",
+    "accessories": ["3x Pairs of optional hands", "Special Beam Cannon effect", "Orange aura base", "Angry face plate"],
+    "imageUrl": "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-power-awakening-1.jpg",
+    "galleryUrls": [
+      "https://www.shfiguarts.com/upload/products/shfiguarts-piccolo-power-awakening-1.jpg"
+    ],
+    "detailUrl": "https://www.shfiguarts.com/products/detail/11400/",
+    "amazonUrl": "",
+    "authenticity": {
+      "stickerType": "Gold Tamashii Nations",
+      "boxTips": "P-Bandai exclusive, Super Hero movie branding",
+      "jointColor": "Green with orange highlights"
+    }
+  }
+]
