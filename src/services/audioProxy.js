@@ -126,15 +126,49 @@ export async function fetchAudioFromUrl(url, onStatus, isolateVocals = false) {
 
 /**
  * Check if the worker proxy is available.
- * Returns { online, demucs }
+ * Returns { online, demucs, whisper }
  */
 export async function checkProxyHealth() {
   try {
     const response = await fetch(`${WORKER_URL}/health`, { signal: AbortSignal.timeout(5000) });
-    if (!response.ok) return { online: false, demucs: false };
+    if (!response.ok) return { online: false, demucs: false, whisper: false };
     const data = await response.json();
-    return { online: true, demucs: !!data.demucs };
+    return { online: true, demucs: !!data.demucs, whisper: !!data.whisper };
   } catch {
-    return { online: false, demucs: false };
+    return { online: false, demucs: false, whisper: false };
   }
+}
+
+/**
+ * Transcribe audio using Whisper AI.
+ * @param {Blob} audioBlob - WAV audio blob
+ * @param {boolean} translate - Also translate to English
+ * @param {function} onStatus - Status callback
+ * @returns {{ language, segments, translation? }}
+ */
+export async function transcribeAudio(audioBlob, translate = false, onStatus) {
+  onStatus?.('Preparing audio...');
+
+  // Convert blob to base64
+  const arrayBuffer = await audioBlob.arrayBuffer();
+  const base64 = btoa(
+    new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+  );
+
+  onStatus?.(translate ? 'Transcribing + translating...' : 'Transcribing...');
+
+  const response = await fetch(`${WORKER_URL}/transcribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ audioBase64: base64, translate }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(err.error || `Transcription failed: ${response.status}`);
+  }
+
+  const result = await response.json();
+  onStatus?.('Done!');
+  return result;
 }

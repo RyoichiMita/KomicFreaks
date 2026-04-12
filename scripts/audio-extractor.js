@@ -115,6 +115,16 @@ try {
 } catch {}
 console.log(`[init] Demucs: ${demucsAvailable ? '✅ available' : '❌ not available'}`);
 
+// ─── Check Whisper availability ───
+let whisperAvailable = false;
+try {
+  if (existsSync(VENV_PYTHON)) {
+    const { stdout } = await execPromise(`"${VENV_PYTHON}" -c "import whisper; print('ok')"`);
+    whisperAvailable = stdout.trim() === 'ok';
+  }
+} catch {}
+console.log(`[init] Whisper: ${whisperAvailable ? '✅ available' : '❌ not available'}`);
+
 // ─── Server ───
 const server = http.createServer(async (req, res) => {
   // CORS preflight
@@ -133,6 +143,7 @@ const server = http.createServer(async (req, res) => {
       service: 'komic-freaks-audio-proxy',
       engine: 'yt-dlp',
       demucs: demucsAvailable,
+      whisper: whisperAvailable,
     });
   }
 
@@ -257,7 +268,74 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  jsonResponse(res, { error: 'Not found. Use /extract, /isolate, or /proxy' }, 404);
+  // ─── Transcribe audio with Whisper ───
+  if (reqUrl.pathname === '/transcribe' && req.method === 'POST') {
+    if (!whisperAvailable) {
+      return jsonResponse(res, { error: 'Whisper is not installed. Run: pip install openai-whisper' }, 503);
+    }
+
+    const chunks = [];
+    req.on('data', (c) => chunks.push(c));
+    req.on('end', async () => {
+      const tmpDir = await mkdtemp(join(tmpdir(), 'komic-whisper-'));
+      try {
+        const body = Buffer.concat(chunks);
+
+        // Check if body is JSON (with url) or raw audio
+        let audioPath;
+        let translate = false;
+
+        // Try parsing as JSON first
+        try {
+          const json = JSON.parse(body.toString());
+          translate = !!json.translate;
+
+          if (json.audioBase64) {
+            // Base64 encoded audio
+            const audioBuf = Buffer.from(json.audioBase64, 'base64');
+            audioPath = join(tmpDir, 'input.wav');
+            const { writeFile } = await import('node:fs/promises');
+            await writeFile(audioPath, audioBuf);
+            console.log(`[transcribe] Received ${(audioBuf.length / 1024 / 1024).toFixed(1)}MB audio (base64)`);
+          } else {
+            return jsonResponse(res, { error: 'Provide audioBase64 in JSON body' }, 400);
+          }
+        } catch {
+          // Raw audio body
+          audioPath = join(tmpDir, 'input.wav');
+          const { writeFile } = await import('node:fs/promises');
+          await writeFile(audioPath, body);
+          translate = reqUrl.searchParams.get('translate') === 'true';
+          console.log(`[transcribe] Received ${(body.length / 1024 / 1024).toFixed(1)}MB audio (raw)`);
+        }
+
+        const outputPath = join(tmpDir, 'result.json');
+        const scriptPath = join(__dirname, 'whisper_transcribe.py');
+        const translateFlag = translate ? ' --translate' : '';
+        const cmd = `"${VENV_PYTHON}" "${scriptPath}" "${audioPath}" "${outputPath}"${translateFlag}`;
+
+        console.log(`[whisper] 🎙️ Transcribing${translate ? ' + translating' : ''}...`);
+        const start = Date.now();
+        await execPromise(cmd);
+        const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+        console.log(`[whisper] ✅ Complete (${elapsed}s)`);
+
+        const resultJson = await readFile(outputPath, 'utf-8');
+        const result = JSON.parse(resultJson);
+
+        res.writeHead(200, { ...CORS_HEADERS, 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        console.error('[transcribe] Failed:', err.message);
+        jsonResponse(res, { error: err.message }, 500);
+      } finally {
+        rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+      }
+    });
+    return;
+  }
+
+  jsonResponse(res, { error: 'Not found. Use /extract, /isolate, /proxy, or /transcribe' }, 404);
 });
 
 server.listen(PORT, () => {
@@ -265,5 +343,6 @@ server.listen(PORT, () => {
   console.log(`   Running on http://localhost:${PORT}`);
   console.log(`   Engine: yt-dlp (local)`);
   console.log(`   Demucs: ${demucsAvailable ? '✅ vocal isolation ready' : '❌ not available'}`);
+  console.log(`   Whisper: ${whisperAvailable ? '✅ transcription ready' : '❌ not available'}`);
   console.log(`   Ready to extract YouTube audio!\n`);
 });
