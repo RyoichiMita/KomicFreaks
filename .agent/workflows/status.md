@@ -1,47 +1,86 @@
 ---
-description: Display project status — progress tracking, dev server health, and next steps.
+description: Display agent and project status. Progress tracking and status board.
 ---
 
-# /status — Show Project Status
+# /status - Show Status
 
-// turbo-all
+$ARGUMENTS
 
-## Steps
+---
 
-1. Read project board
-```bash
-cat "/Users/zakariyayahiaoui/Development/projects/Komic Freaks/PROJECT_BOARD.md"
+## Task
+
+Show current project and agent status.
+
+### What It Shows
+
+1. **Project Info**
+   - Project name and path
+   - Tech stack
+   - Current features
+
+2. **Agent Status Board**
+   - Which agents are running
+   - Which tasks are completed
+   - Pending work
+
+3. **File Statistics**
+   - Files created count
+   - Files modified count
+
+4. **Preview Status**
+   - Is server running
+   - URL
+   - Health check
+
+---
+
+## Example Output
+
+```
+=== Project Status ===
+
+📁 Project: my-ecommerce
+📂 Path: C:/projects/my-ecommerce
+🏷️ Type: nextjs-ecommerce
+📊 Status: active
+
+🔧 Tech Stack:
+   Framework: next.js
+   Database: postgresql
+   Auth: clerk
+   Payment: stripe
+
+✅ Features (5):
+   • product-listing
+   • cart
+   • checkout
+   • user-auth
+   • order-history
+
+⏳ Pending (2):
+   • admin-panel
+   • email-notifications
+
+📄 Files: 73 created, 12 modified
+
+=== Agent Status ===
+
+✅ database-architect → Completed
+✅ backend-specialist → Completed
+🔄 frontend-specialist → Dashboard components (60%)
+⏳ test-engineer → Waiting
+
+=== Preview ===
+
+🌐 URL: http://localhost:3000
+💚 Health: OK
 ```
 
-2. Check dev server health
-```bash
-lsof -i :5173 2>/dev/null | head -5
-```
+---
 
-3. Check git status
-```bash
-cd "/Users/zakariyayahiaoui/Development/projects/Komic Freaks" && git log --oneline -5 && echo "---" && git status --short
-```
+## Technical
 
-4. Count codebase stats
-```bash
-cd "/Users/zakariyayahiaoui/Development/projects/Komic Freaks" && find src -name "*.jsx" -o -name "*.js" -o -name "*.css" | wc -l && echo "files" && wc -l src/**/*.jsx src/**/*.js src/**/*.css 2>/dev/null | tail -1
-```
-
-5. Present status summary:
-```
-=== Komic Freaks Studio Status ===
-
-📁 Project: Komic Freaks Studio
-🏷️ Type: WEB (Vite + React)
-🌐 Dev Server: [Running/Stopped]
-
-✅ Done: X features
-🔄 In Progress: X features
-📝 To Do: X features
-
-📊 Last 5 commits:
-[git log output]
-
-📄 Codebase: X files, Y lines
-```
+Status uses these scripts:
+- `python .agent/scripts/session_manager.py status`
+- `python .agent/scripts/auto_preview.py status`

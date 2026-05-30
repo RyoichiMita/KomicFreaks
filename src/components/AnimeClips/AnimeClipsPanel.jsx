@@ -13,6 +13,7 @@ import {
   Clock,
   Link,
   Globe,
+  Download,
 } from 'lucide-react';
 import useEditorStore from '../../stores/editorStore';
 import { storeAnimeClip, getAllAnimeClips, deleteAnimeClip } from '../../services/animeClipsDB';
@@ -129,6 +130,99 @@ export default function AnimeClipsPanel() {
       setIsFetchingUrl(false);
     }
   };
+
+  // --- Local URL Download Handler (via Vite Plugin / yt-dlp) ---
+  const handleLocalDownload = async (extractAudio) => {
+    if (!urlInput.trim()) {
+      showNotification('Paste a URL first', 'error');
+      return;
+    }
+
+    setIsFetchingUrl(true);
+    setUrlStatus('Starting local engine (yt-dlp)...');
+
+    try {
+      const response = await fetch('/api/ytdlp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: urlInput.trim(), extractAudio, format: 'video' })
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+      let finalFileUrl = null;
+      let finalFileName = null;
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                if (data.progress) setUrlStatus(data.progress);
+                if (data.error) throw new Error(data.error);
+                if (data.done) {
+                  finalFileUrl = data.fileUrl;
+                  finalFileName = data.fileName;
+                }
+              } catch (e) {
+                // ignore parse error if chunk split
+              }
+            }
+          }
+        }
+      }
+
+      if (finalFileUrl) {
+        setUrlStatus('Loading into scrubber...');
+        const mediaRes = await fetch(finalFileUrl);
+        const blob = await mediaRes.blob();
+        
+        if (episodeUrl) URL.revokeObjectURL(episodeUrl);
+        const url = URL.createObjectURL(blob);
+        setEpisodeFile({ name: finalFileName || 'Local Download' });
+        setEpisodeUrl(url);
+        setInPoint(null);
+        setOutPoint(null);
+        setIsPlayingEp(false);
+        setActiveMode('extract');
+        setUrlStatus('');
+        showNotification('✅ Media loaded — set IN/OUT points to extract clips', 'success');
+      }
+
+    } catch (err) {
+      console.error('Local download failed:', err);
+      setUrlStatus('');
+      showNotification(`Local download failed: ${err.message}`, 'error');
+    } finally {
+      setIsFetchingUrl(false);
+    }
+  };
+
+  // --- Helper: Parse anime site URLs to YouTube Search Query ---
+  const parseAnimeUrlToSearchQuery = (url) => {
+    try {
+      if (url.includes('aniwaves.ru') || url.includes('aniwatch') || url.includes('hianime')) {
+        // e.g. https://aniwaves.ru/watch/one-piece-81553/ep-467
+        const match = url.match(/\/watch\/([^\/]+)\/ep-(\d+)/);
+        if (match) {
+          const titleRaw = match[1].split('-').filter(w => !/\d{4,}/.test(w)).join(' ');
+          const ep = match[2];
+          return `${titleRaw} ep ${ep}`;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  };
+
+  const autoSearchQuery = urlInput ? parseAnimeUrlToSearchQuery(urlInput) : null;
 
   // --- Episode File Handling ---
   const handleEpisodeLoad = (e) => {
@@ -746,34 +840,105 @@ export default function AnimeClipsPanel() {
               </div>
             )}
 
-            {/* Fetch Button */}
             <button
               className="btn btn-primary"
               style={{ width: '100%', justifyContent: 'center', marginTop: 'var(--space-md)' }}
               onClick={handleFetchUrl}
-              disabled={!urlInput.trim() || isFetchingUrl || proxyAvailable === false}
+              disabled={!urlInput.trim() || isFetchingUrl || (isYouTubeUrl(urlInput) && proxyAvailable === false)}
             >
               {isFetchingUrl ? (
                 <>
                   <div className="spinner" />
-                  Fetching...
+                  Fetching via Proxy...
                 </>
               ) : (
                 <>
-                  <Link size={14} />
-                  Fetch Audio
+                  <Globe size={14} />
+                  Fetch via Cloud Proxy
                 </>
               )}
             </button>
+
+            {/* Smart Fallback for Unsupported Anime Sites */}
+            {autoSearchQuery && (
+              <div style={{ marginTop: 'var(--space-md)', padding: '12px', background: 'var(--bg-deep)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <Search size={16} color="var(--accent-primary-light)" />
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)' }}>Streaming Site Detected</span>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Method 1: YouTube */}
+                  <div style={{ padding: '8px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                    <div style={{ fontSize: '0.688rem', fontWeight: 600, color: 'var(--accent-primary-light)', marginBottom: '4px' }}>Method 1: Auto-Find on YouTube (Fast)</div>
+                    <div style={{ fontSize: '0.625rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                      Automatically search YouTube for this scene. (Audio may be altered due to copyright).
+                    </div>
+                    <button
+                      className="btn btn-ghost"
+                      style={{ width: '100%', justifyContent: 'center', fontSize: '0.688rem', background: 'var(--bg-base)' }}
+                      onClick={() => {
+                        const searchUrl = `ytsearch1:${autoSearchQuery} best moments`;
+                        setUrlInput(searchUrl);
+                        showNotification(`Switched to YouTube search`, 'info');
+                      }}
+                    >
+                      <Search size={12} /> Use YouTube Alternative
+                    </button>
+                  </div>
+
+                  {/* Method 2: m3u8 */}
+                  <div style={{ padding: '8px', background: 'rgba(139, 92, 246, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                    <div style={{ fontSize: '0.688rem', fontWeight: 600, color: 'var(--accent-secondary)', marginBottom: '4px' }}>Method 2: Exact Audio (High Quality)</div>
+                    <div style={{ fontSize: '0.625rem', color: 'var(--text-secondary)', marginBottom: '8px', lineHeight: '1.4' }}>
+                      To get the exact, unaltered audio directly from this player, paste the raw stream URL (m3u8):
+                      <ol style={{ margin: '4px 0 0 16px', padding: 0 }}>
+                        <li>Press <b>Cmd+Option+I</b> to open Developer Tools</li>
+                        <li>Go to the <b>Network</b> tab and type <b>m3u8</b> in the filter</li>
+                        <li>Play the video, right-click the first result, and <b>Copy Link Address</b></li>
+                        <li>Paste that link into the URL bar above!</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Local Engine Buttons */}
+            <div style={{ marginTop: 'var(--space-md)' }}>
+              <div style={{ fontSize: '0.625rem', color: 'var(--text-muted)', marginBottom: '4px', textAlign: 'center' }}>
+                Local Engine (Supports 1000+ sites incl. Anime streaming sites)
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  className="btn btn-ghost"
+                  style={{ flex: 1, justifyContent: 'center', background: 'var(--bg-deep)', border: '1px solid var(--border-default)' }}
+                  onClick={() => handleLocalDownload(true)}
+                  disabled={!urlInput.trim() || isFetchingUrl}
+                >
+                  <Download size={14} />
+                  Audio Only
+                </button>
+                <button
+                  className="btn btn-ghost"
+                  style={{ flex: 1, justifyContent: 'center', background: 'var(--bg-deep)', border: '1px solid var(--border-default)' }}
+                  onClick={() => handleLocalDownload(false)}
+                  disabled={!urlInput.trim() || isFetchingUrl}
+                >
+                  <Download size={14} />
+                  Full Video
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* How it works */}
           <div className="anime-url-help">
             <div style={{ fontSize: '0.688rem', fontWeight: 600, marginBottom: '4px' }}>How it works</div>
-            <div className="anime-url-step">1. Paste a YouTube or video URL above</div>
-            <div className="anime-url-step">2. Audio is fetched via your Cloudflare Worker</div>
-            <div className="anime-url-step">3. Loaded into the scrubber — set IN/OUT points</div>
-            <div className="anime-url-step">4. Extract and tag your clips</div>
+            <div className="anime-url-step">1. Paste a video URL (YouTube, aniwaves, etc.)</div>
+            <div className="anime-url-step">2. Choose Cloud Proxy or Local Engine</div>
+            <div className="anime-url-step">3. Media is loaded into the scrubber</div>
+            <div className="anime-url-step">4. Set IN/OUT points to extract clips</div>
           </div>
         </div>
       )}

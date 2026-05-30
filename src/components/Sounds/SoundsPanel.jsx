@@ -49,6 +49,21 @@ const SOUND_CATEGORIES = [
       { emoji: '👊', label: 'Ora Ora', file: 'ora-ora' },
     ],
   },
+  {
+    title: 'One Piece (MyInstants)',
+    sounds: [
+      { emoji: '🏴‍☠️', label: 'ZEHAHAHA', file: 'zehahaha_laugh', isMp3: true },
+      { emoji: '🚢', label: 'Much Higher', file: 'can-we-get-much-higher-one-piece-meme', isMp3: true },
+      { emoji: '💀', label: 'Brook Laugh', file: 'one-piece-brooks-laugh-15-minutes', isMp3: true },
+      { emoji: '👑', label: 'OP is REAL', file: 'the-one-piece-is-real', isMp3: true },
+      { emoji: '🐌', label: 'Den Den Mushi', file: 'transponder_snail', isMp3: true },
+      { emoji: '👁️', label: 'Observation Haki', file: 'observation_haki_one_piece_katakuri_sound_effect_for_editing_5356509840631764694', isMp3: true },
+      { emoji: '🔊', label: 'Den Den Loud', file: 'den-den-mushi-ring-short-louder', isMp3: true },
+      { emoji: '📱', label: 'OP Ringtone', file: 'one_piece_ringtone_free_ringtones_for_cell_phones', isMp3: true },
+      { emoji: '🎶', label: 'OP Intro', file: 'one-piece-intro', isMp3: true },
+      { emoji: '🥁', label: 'Overtaken', file: 'one-piece-ost-overtaken', isMp3: true },
+    ],
+  },
 ];
 
 export default function SoundsPanel() {
@@ -131,24 +146,52 @@ export default function SoundsPanel() {
 
   const handlePreview = (sound) => {
     setPlayingId(sound.file);
-    playSFX(sound.file);
-    setTimeout(() => setPlayingId(null), 800);
+    
+    if (sound.isMp3) {
+      if (previewAudioRef.current) {
+        previewAudioRef.current.pause();
+      }
+      const audio = new Audio(`/sounds/anime/${sound.file}.mp3`);
+      audio.play().catch(() => {});
+      audio.onended = () => setPlayingId(null);
+      previewAudioRef.current = audio;
+    } else {
+      playSFX(sound.file);
+      setTimeout(() => setPlayingId(null), 800);
+    }
   };
 
   const handleAddToTimeline = (sound) => {
-    const duration = getSFXDuration(sound.file);
-    const blobUrl = getSFXBlobUrl(sound.file);
+    if (sound.isMp3) {
+      const url = `/sounds/anime/${sound.file}.mp3`;
+      const audio = new Audio(url);
+      audio.onloadedmetadata = () => {
+        addClipToTrack('sfx', {
+          name: `${sound.emoji} ${sound.label}`,
+          url: url,
+          startTime: 0,
+          duration: audio.duration,
+          offset: 0,
+          type: 'sfx',
+          sfxId: sound.file,
+        });
+        showNotification(`Added "${sound.label}" to timeline`, 'success');
+      };
+    } else {
+      const duration = getSFXDuration(sound.file);
+      const blobUrl = getSFXBlobUrl(sound.file);
 
-    addClipToTrack('sfx', {
-      name: `${sound.emoji} ${sound.label}`,
-      url: blobUrl,
-      startTime: 0,
-      duration: duration,
-      offset: 0,
-      type: 'sfx',
-      sfxId: sound.file,
-    });
-    showNotification(`Added "${sound.label}" to timeline`, 'success');
+      addClipToTrack('sfx', {
+        name: `${sound.emoji} ${sound.label}`,
+        url: blobUrl,
+        startTime: 0,
+        duration: duration,
+        offset: 0,
+        type: 'sfx',
+        sfxId: sound.file,
+      });
+      showNotification(`Added "${sound.label}" to timeline`, 'success');
+    }
   };
 
   // Filter sounds by search (include custom)
