@@ -10,9 +10,26 @@ permissions:
   pull-requests: read
 
 jobs:
+  # Server first, GitHub when busy: our server runs this for free when it has a free slot; otherwise GitHub does,
+  # straight away, so a check never waits in a queue (Command Centre /api/checks/capacity, 2026-10-15).
+  where:
+    name: Pick a machine
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      runner: ${{ steps.pick.outputs.runner }}
+    steps:
+      - id: pick
+        run: |
+          if curl -fsS -m 10 https://command.deployenjoy.com/api/checks/capacity | grep -q '"free":true'; then
+            echo 'runner=["self-hosted","cortana"]' >> "$GITHUB_OUTPUT"; echo "Our server has a free slot"
+          else
+            echo 'runner="ubuntu-latest"' >> "$GITHUB_OUTPUT"; echo "Our server is busy: running on GitHub"
+          fi
   secret-scan:
     name: Secret scan
-    runs-on: ubuntu-latest
+    needs: where
+    runs-on: ${{ fromJSON(needs.where.outputs.runner) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +40,8 @@ jobs:
 
   web:
     name: Node (web app)
-    runs-on: ubuntu-latest
+    needs: where
+    runs-on: ${{ fromJSON(needs.where.outputs.runner) }}
     defaults:
       run:
         working-directory: .
